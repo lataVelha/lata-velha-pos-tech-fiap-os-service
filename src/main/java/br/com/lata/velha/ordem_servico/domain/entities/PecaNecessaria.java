@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Peça necessária para a execução de um serviço, do ponto de vista da OS: só o que é
+ * TODO: Peça necessária para a execução de um serviço, do ponto de vista da OS: só o que é
  * preciso para diagnóstico/execução (id da peça, quantidade). Preço, estoque e reserva
  * são responsabilidade exclusiva do InventoryService; quem precisa do valor (o
  * BillingService, ao montar o orçamento após o evento DiagnosticoFinalizado) consulta o

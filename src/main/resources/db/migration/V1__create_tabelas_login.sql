@@ -81,9 +81,6 @@ CREATE TABLE SERVICO (
     ATIVO     BOOLEAN      NOT NULL DEFAULT TRUE
 );
 
--- PECA e PECA_ESTOQUE agora pertencem ao InventoryService (ver
--- lata-velha-pos-tech-fiap-inventory) - não são mais criadas aqui.
-
 CREATE TABLE ORDEM_SERVICO (
     ID                      BIGSERIAL     PRIMARY KEY,
     PROPRIETARIO_ID         BIGINT        NOT NULL,
@@ -114,10 +111,6 @@ CREATE TABLE EXECUCAO_SERVICO (
     CONSTRAINT FK_EXECUCAO_SERVICO_OS      FOREIGN KEY (OS_ID)      REFERENCES ORDEM_SERVICO(ID)
 );
 
--- PECA_NECESSARIA (antiga PECA_ALOCADA): só o que a OS precisa saber sobre a peça
--- (id + quantidade). Preço, reserva e baixa de estoque ficam no InventoryService
--- (PECA_ID não tem FK aqui pois PECA vive em outro banco/serviço; quem precisa do
--- valor é o BillingService, consultando o InventoryService - ver billing-service-todo.md).
 CREATE TABLE PECA_NECESSARIA (
     ID                  BIGSERIAL     PRIMARY KEY,
     EXECUCAO_SERVICO_ID BIGINT        NOT NULL,
