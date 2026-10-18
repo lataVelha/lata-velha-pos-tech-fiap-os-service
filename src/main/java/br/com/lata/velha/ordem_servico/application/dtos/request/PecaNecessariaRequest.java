@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * A OS só precisa saber qual peça e quanto dela é necessária para o serviço - preço é
+ * TODO: A OS só precisa saber qual peça e quanto dela é necessária para o serviço - preço é
  * assunto do InventoryService, consultado pelo BillingService ao montar o orçamento
  * (evento DiagnosticoFinalizado, ver billing-service-todo.md).
  */
