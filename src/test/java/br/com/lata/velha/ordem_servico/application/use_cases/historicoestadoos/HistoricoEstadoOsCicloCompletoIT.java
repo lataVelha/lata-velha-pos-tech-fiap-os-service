@@ -16,6 +16,7 @@ import br.com.lata.velha.ordem_servico.domain.enums.StatusOrdemServico;
 import br.com.lata.velha.ordem_servico.domain.view.TempoMedioPorEstado;
 import br.com.lata.velha.ordem_servico.infrastructure.persistence.entities.*;
 import br.com.lata.velha.ordem_servico.infrastructure.persistence.gateways.OrdemServicoGatewayImpl;
+import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.shared.application.logging.Logger;
 import br.com.lata.velha.shared.domain.value_objects.UserId;
 import jakarta.persistence.EntityManager;
@@ -66,6 +67,7 @@ class HistoricoEstadoOsCicloCompletoIT {
 
     @MockBean private EmailProvider emailProvider;
     @MockBean private EmailTemplateProvider emailTemplateProvider;
+    @MockBean private EventPublisher eventPublisher;
 
     private BuscarHistoricoEstadoUseCase buscarHistoricoEstadoUseCase;
 

@@ -32,9 +32,6 @@ public class ReceberAprovacaoOrcamentoClienteUseCase {
 
         var statusPorId = input.getServiceStatusMap();
 
-        // TODO: a aprovação do orçamento pelo cliente passa a emitir o evento
-        // OrcamentoAprovado, consumido pelo InventoryService para conferir/reservar
-        // estoque (general-flow.md passo 6-10) - a reserva não é mais feita aqui.
         ordemServico.getExecucaoServicos().forEach(execucaoServico -> {
             var novoStatus = statusPorId.get(execucaoServico.getId());
             if (novoStatus == StatusExecucaoServico.APROVADO) {

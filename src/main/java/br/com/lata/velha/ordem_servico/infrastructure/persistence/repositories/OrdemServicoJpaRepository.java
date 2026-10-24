@@ -8,8 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
 
 public interface OrdemServicoJpaRepository extends JpaRepository<OrdemServicoEntity, Long> {
+
+    @Query("SELECT DISTINCT os FROM OrdemServicoEntity os LEFT JOIN FETCH os.historicoEstados WHERE os.id = :id")
+    Optional<OrdemServicoEntity> findByIdWithHistorico(@Param("id") Long id);
 
     @Query(value = """
             SELECT
@@ -48,23 +52,17 @@ public interface OrdemServicoJpaRepository extends JpaRepository<OrdemServicoEnt
                                    SELECT COALESCE(
                                        JSON_AGG(
                                            JSONB_BUILD_OBJECT(
-                                               'alocacaoId', sp.id,
-                                               'id', peca.id,
-                                               'nome', peca.nome,
-                                               'valor', peca.valor,
-                                               'quantidadeSolicitada', sp.qtd_solicitada,
-                                               'quantidadeReservada', sp.qtd_reservada,
-                                               'quantidadeEncomendada', sp.qtd_encomendada,
-                                               'status', sp.status,
-                                               'atualizado', sp.atualizado_em
+                                               'id', pn.id,
+                                               'pecaId', pn.peca_id,
+                                               'quantidade', pn.quantidade,
+                                               'atualizado', pn.atualizado_em
                                            )
-                                           ORDER BY sp.atualizado_em ASC
+                                           ORDER BY pn.atualizado_em ASC
                                        ),
                                        '[]'
                                    )
-                                   FROM peca_alocada sp
-                                   JOIN peca peca ON peca.id = sp.peca_id
-                                   WHERE sp.execucao_servico_id = so.id
+                                   FROM peca_necessaria pn
+                                   WHERE pn.execucao_servico_id = so.id
                                )
                            )
                        ) FILTER (WHERE so.id IS NOT NULL),
@@ -172,24 +170,17 @@ public interface OrdemServicoJpaRepository extends JpaRepository<OrdemServicoEnt
                                SELECT COALESCE(
                                    JSON_AGG(
                                        JSONB_BUILD_OBJECT(
-                                           'alocacaoId', sp.id,
-                                           'id', peca.id,
-                                           'nome', peca.nome,
-                                           'valor', peca.valor,
-                                           'quantidadeSolicitada', sp.qtd_solicitada,
-                                           'quantidadeReservada', sp.qtd_reservada,
-                                           'quantidadeEncomendada', sp.qtd_encomendada,
-                                           'status', sp.status,
-                                           'atualizado', sp.atualizado_em
+                                           'id', pn.id,
+                                           'pecaId', pn.peca_id,
+                                           'quantidade', pn.quantidade,
+                                           'atualizado', pn.atualizado_em
                                        )
-                                       ORDER BY sp.atualizado_em ASC
+                                       ORDER BY pn.atualizado_em ASC
                                    ),
                                    '[]'
                                )
-                               FROM peca_alocada sp
-                               JOIN peca peca
-                                   ON peca.id = sp.peca_id
-                               WHERE sp.execucao_servico_id = so.id
+                               FROM peca_necessaria pn
+                               WHERE pn.execucao_servico_id = so.id
                            )
                        )
                    ) FILTER (WHERE so.id IS NOT NULL),

@@ -12,6 +12,7 @@ import br.com.lata.velha.ordem_servico.application.use_cases.proprietario.CriarP
 import br.com.lata.velha.ordem_servico.application.use_cases.proprietario.NotificarCadastroProprietarioUseCase;
 import br.com.lata.velha.ordem_servico.application.use_cases.veiculo.CriarVeiculoGateway;
 import br.com.lata.velha.ordem_servico.domain.enums.StatusOrdemServico;
+import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.shared.application.logging.Logger;
 import br.com.lata.velha.shared.domain.pagination.PaginatedResult;
 import br.com.lata.velha.shared.domain.value_objects.UserId;
@@ -46,6 +47,7 @@ public class OrdemServicoCleanController {
     private final RetirarVeiculoGateway retirarVeiculoGateway;
     private final ReceberAprovacaoOrcamentoClienteGateway receberAprovacaoGateway;
     private final ReceberAprovacaoOrcamentoClientePresenter receberAprovacaoPresenter;
+    private final EventPublisher eventPublisher;
 
     public OrdemServicoCleanController(
             NotificarOrdemServicoGateway notificarGateway,
@@ -72,6 +74,7 @@ public class OrdemServicoCleanController {
             RetirarVeiculoGateway retirarVeiculoGateway,
             ReceberAprovacaoOrcamentoClienteGateway receberAprovacaoGateway,
             ReceberAprovacaoOrcamentoClientePresenter receberAprovacaoPresenter,
+            EventPublisher eventPublisher,
             Logger logger) {
 
         this.logger = logger;
@@ -99,6 +102,7 @@ public class OrdemServicoCleanController {
         this.retirarVeiculoGateway = retirarVeiculoGateway;
         this.receberAprovacaoGateway = receberAprovacaoGateway;
         this.receberAprovacaoPresenter = receberAprovacaoPresenter;
+        this.eventPublisher = eventPublisher;
     }
 
     public OrdemServicoResponse criar(CriarOrdemServicoUseCase.Input input) {
@@ -162,7 +166,7 @@ public class OrdemServicoCleanController {
 
     public void finalizarDiagnostico(FinalizarDiagnosticoUseCase.Input input) {
         logger.logInfo("Iniciando finalização de diagnóstico - osId={}", input.idOs());
-        new FinalizarDiagnosticoUseCase(finalizarDiagnosticoGateway, notificarService, logger).execute(input);
+        new FinalizarDiagnosticoUseCase(finalizarDiagnosticoGateway, notificarService, eventPublisher, logger).execute(input);
         logger.logInfo("Finalização de diagnóstico concluída com sucesso - osId={}", input.idOs());
     }
 
@@ -188,7 +192,7 @@ public class OrdemServicoCleanController {
 
     public void finalizarServico(FinalizarServicoUseCase.Input input) {
         logger.logInfo("Iniciando finalização de serviço - osId={}, servicoId={}", input.osId(), input.servicoId());
-        new FinalizarServicoUseCase(finalizarServicoGateway, notificarService, logger).execute(input);
+        new FinalizarServicoUseCase(finalizarServicoGateway, notificarService, eventPublisher, logger).execute(input);
         logger.logInfo("Finalização de serviço concluída com sucesso - osId={}, servicoId={}", input.osId(), input.servicoId());
     }
 

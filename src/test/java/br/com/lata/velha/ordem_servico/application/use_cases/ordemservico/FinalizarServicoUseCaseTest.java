@@ -6,6 +6,7 @@ import br.com.lata.velha.ordem_servico.domain.entities.Funcionario;
 import br.com.lata.velha.ordem_servico.domain.entities.OrdemServico;
 import br.com.lata.velha.ordem_servico.domain.enums.StatusExecucaoServico;
 import br.com.lata.velha.ordem_servico.domain.enums.StatusOrdemServico;
+import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.shared.application.logging.Logger;
 import br.com.lata.velha.shared.domain.value_objects.UserId;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +32,7 @@ class FinalizarServicoUseCaseTest {
 
     @Mock private FinalizarServicoGateway gateway;
     @Mock private NotificarOrdemServicoService notificarService;
+    @Mock private EventPublisher eventPublisher;
     @Mock private Logger logger;
 
     private FinalizarServicoUseCase useCase;
@@ -44,7 +46,7 @@ class FinalizarServicoUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new FinalizarServicoUseCase(gateway, notificarService, logger);
+        useCase = new FinalizarServicoUseCase(gateway, notificarService, eventPublisher, logger);
         mecanico = new Funcionario(MECANICO_ID, "Carlos Mecânico", null, null);
         userId = UserId.random();
     }

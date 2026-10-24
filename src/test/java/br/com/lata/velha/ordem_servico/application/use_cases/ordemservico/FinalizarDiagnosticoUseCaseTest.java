@@ -4,6 +4,7 @@ import br.com.lata.velha.ordem_servico.application.services.ordemservico.Notific
 import br.com.lata.velha.ordem_servico.domain.entities.Funcionario;
 import br.com.lata.velha.ordem_servico.domain.entities.OrdemServico;
 import br.com.lata.velha.ordem_servico.domain.enums.StatusOrdemServico;
+import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.shared.application.logging.Logger;
 import br.com.lata.velha.shared.domain.value_objects.UserId;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,7 @@ class FinalizarDiagnosticoUseCaseTest {
 
     @Mock private FinalizarDiagnosticoGateway gateway;
     @Mock private NotificarOrdemServicoService notificarService;
+    @Mock private EventPublisher eventPublisher;
     @Mock private Logger logger;
 
     private FinalizarDiagnosticoUseCase useCase;
@@ -41,7 +43,7 @@ class FinalizarDiagnosticoUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new FinalizarDiagnosticoUseCase(gateway, notificarService, logger);
+        useCase = new FinalizarDiagnosticoUseCase(gateway, notificarService, eventPublisher, logger);
         userId = UserId.random();
         funcionario = new Funcionario(MECANICO_ID, "Carlos Mecânico", null, null);
     }
@@ -64,7 +66,7 @@ class FinalizarDiagnosticoUseCaseTest {
     @DisplayName("deve finalizar diagnóstico sem serviços e ir direto para FINALIZADA")
     void deveFinalizarDiagnosticoSemServicosParaFinalizada() {
         var os = buildOs(StatusOrdemServico.EM_DIAGNOSTICO);
-        when(gateway.getOrdemServicoComServicos(OS_ID)).thenReturn(os);
+        when(gateway.getOrdemServicoComServicosEPecas(OS_ID)).thenReturn(os);
         when(gateway.getFuncionarioPorUserId(userId)).thenReturn(funcionario);
         when(gateway.salvarOrdemServico(any())).thenReturn(os);
 
@@ -77,7 +79,7 @@ class FinalizarDiagnosticoUseCaseTest {
     @DisplayName("deve salvar OS após finalizar diagnóstico")
     void deveSalvarOsAposFinalizarDiagnostico() {
         var os = buildOs(StatusOrdemServico.EM_DIAGNOSTICO);
-        when(gateway.getOrdemServicoComServicos(OS_ID)).thenReturn(os);
+        when(gateway.getOrdemServicoComServicosEPecas(OS_ID)).thenReturn(os);
         when(gateway.getFuncionarioPorUserId(userId)).thenReturn(funcionario);
         when(gateway.salvarOrdemServico(any())).thenReturn(os);
 
@@ -90,7 +92,7 @@ class FinalizarDiagnosticoUseCaseTest {
     @DisplayName("deve notificar após finalizar diagnóstico")
     void deveNotificarAposFinalizarDiagnostico() {
         var os = buildOs(StatusOrdemServico.EM_DIAGNOSTICO);
-        when(gateway.getOrdemServicoComServicos(OS_ID)).thenReturn(os);
+        when(gateway.getOrdemServicoComServicosEPecas(OS_ID)).thenReturn(os);
         when(gateway.getFuncionarioPorUserId(userId)).thenReturn(funcionario);
         when(gateway.salvarOrdemServico(any())).thenReturn(os);
 
@@ -103,7 +105,7 @@ class FinalizarDiagnosticoUseCaseTest {
     @DisplayName("deve propagar exceção quando usuário não é funcionário")
     void devePropagateExcecaoQuandoUsuarioNaoEFuncionario() {
         var os = buildOs(StatusOrdemServico.EM_DIAGNOSTICO);
-        when(gateway.getOrdemServicoComServicos(OS_ID)).thenReturn(os);
+        when(gateway.getOrdemServicoComServicosEPecas(OS_ID)).thenReturn(os);
         when(gateway.getFuncionarioPorUserId(userId)).thenThrow(new RuntimeException("Usuário não é funcionário"));
         var input = input();
 
@@ -118,7 +120,7 @@ class FinalizarDiagnosticoUseCaseTest {
     @DisplayName("deve lançar exceção quando OS não está EM_DIAGNOSTICO")
     void deveLancarExcecaoQuandoOsNaoEstaEmDiagnostico() {
         var os = buildOs(StatusOrdemServico.RECEBIDA);
-        when(gateway.getOrdemServicoComServicos(OS_ID)).thenReturn(os);
+        when(gateway.getOrdemServicoComServicosEPecas(OS_ID)).thenReturn(os);
         when(gateway.getFuncionarioPorUserId(userId)).thenReturn(funcionario);
         var input = input();
 
@@ -133,7 +135,7 @@ class FinalizarDiagnosticoUseCaseTest {
     @DisplayName("deve lançar exceção quando OS já está AGUARDANDO_APROVACAO")
     void deveLancarExcecaoQuandoOsJaAguardandoAprovacao() {
         var os = buildOs(StatusOrdemServico.AGUARDANDO_APROVACAO);
-        when(gateway.getOrdemServicoComServicos(OS_ID)).thenReturn(os);
+        when(gateway.getOrdemServicoComServicosEPecas(OS_ID)).thenReturn(os);
         when(gateway.getFuncionarioPorUserId(userId)).thenReturn(funcionario);
         var input = input();
 
@@ -146,7 +148,7 @@ class FinalizarDiagnosticoUseCaseTest {
     @Test
     @DisplayName("deve propagar exceção quando OS não encontrada")
     void devePropagateExcecaoQuandoOsNaoEncontrada() {
-        when(gateway.getOrdemServicoComServicos(OS_ID))
+        when(gateway.getOrdemServicoComServicosEPecas(OS_ID))
                 .thenThrow(new RuntimeException("OS não encontrada"));
         var input = input();
 

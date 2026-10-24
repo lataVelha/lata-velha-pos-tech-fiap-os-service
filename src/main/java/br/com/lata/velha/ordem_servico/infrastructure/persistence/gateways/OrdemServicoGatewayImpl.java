@@ -30,15 +30,24 @@ public class OrdemServicoGatewayImpl implements
         ReprovarOrdemServicoGateway,
         RetirarVeiculoGateway,
         NotificarOrdemServicoGateway,
-        ReceberAprovacaoOrcamentoClienteGateway {
+        ReceberAprovacaoOrcamentoClienteGateway,
+        ReceberInventoryCheckedGateway,
+        ReceberOrcamentoReprovadoGateway,
+        ReceberPecaCompletamenteAlocadaGateway {
 
     private final OrdemServicoRepository ordemServicoRepository;
     private final FuncionarioRepository funcionarioRepository;
     private final ProprietarioRepository proprietarioRepository;
     private final VeiculoRepository veiculoRepository;
     private final ServicoRepository servicoRepository;
+    private final ExecucaoServicoRepository execucaoServicoRepository;
     private final ExecucaoServicoMetricaRepository execucaoServicoMetricaRepository;
     private final Logger logger;
+
+    @Override
+    public ExecucaoServico getExecucaoServicoPorId(Long id) {
+        return execucaoServicoRepository.findById(id);
+    }
 
     @Override
     public Proprietario getProprietarioAtivoPorId(Long id) {

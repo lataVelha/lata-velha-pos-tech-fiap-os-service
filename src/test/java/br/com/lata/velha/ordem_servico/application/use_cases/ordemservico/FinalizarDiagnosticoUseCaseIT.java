@@ -9,6 +9,7 @@ import br.com.lata.velha.ordem_servico.domain.enums.StatusExecucaoServico;
 import br.com.lata.velha.ordem_servico.domain.enums.StatusOrdemServico;
 import br.com.lata.velha.ordem_servico.domain.exceptions.not_found_exceptions.FuncionarioNotFoundException;
 import br.com.lata.velha.ordem_servico.infrastructure.persistence.entities.*;
+import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.shared.application.logging.Logger;
 import br.com.lata.velha.shared.domain.value_objects.UserId;
 import jakarta.persistence.EntityManager;
@@ -47,6 +48,7 @@ class FinalizarDiagnosticoUseCaseIT {
 
     @MockBean private EmailProvider emailProvider;
     @MockBean private EmailTemplateProvider emailTemplateProvider;
+    @MockBean private EventPublisher eventPublisher;
 
     private FinalizarDiagnosticoUseCase useCase;
 
@@ -57,7 +59,7 @@ class FinalizarDiagnosticoUseCaseIT {
     @BeforeEach
     void setUp() {
         var notificarService = new NotificarOrdemServicoService(notificarGateway, emailProvider, emailTemplateProvider, logger);
-        useCase = new FinalizarDiagnosticoUseCase(gateway, notificarService, logger);
+        useCase = new FinalizarDiagnosticoUseCase(gateway, notificarService, eventPublisher, logger);
 
         RoleEntity role = new RoleEntity(null, "MECANICO");
         em.persist(role);

@@ -5,7 +5,7 @@ import br.com.lata.velha.ordem_servico.domain.entities.OrdemServico;
 import br.com.lata.velha.shared.domain.value_objects.UserId;
 
 public interface FinalizarDiagnosticoGateway {
-    OrdemServico getOrdemServicoComServicos(Long id);
+    OrdemServico getOrdemServicoComServicosEPecas(Long id);
     Funcionario getFuncionarioPorUserId(UserId userId);
     OrdemServico salvarOrdemServico(OrdemServico os);
 }

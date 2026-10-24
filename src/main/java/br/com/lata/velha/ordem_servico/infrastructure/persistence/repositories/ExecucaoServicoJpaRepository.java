@@ -8,9 +8,13 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface ExecucaoServicoJpaRepository extends JpaRepository<ExecucaoServicoEntity, Long> {
+
+    @Query("SELECT e FROM ExecucaoServicoEntity e LEFT JOIN FETCH e.pecasNecessarias WHERE e.id = :id")
+    Optional<ExecucaoServicoEntity> findByIdWithPecas(@Param("id") Long id);
 
     @Query(value = """
             SELECT
