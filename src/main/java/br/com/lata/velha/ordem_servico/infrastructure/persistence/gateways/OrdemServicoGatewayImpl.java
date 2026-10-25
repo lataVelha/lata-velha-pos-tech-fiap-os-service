@@ -33,7 +33,8 @@ public class OrdemServicoGatewayImpl implements
         ReceberAprovacaoOrcamentoClienteGateway,
         ReceberInventoryCheckedGateway,
         ReceberOrcamentoReprovadoGateway,
-        ReceberPecaCompletamenteAlocadaGateway {
+        ReceberPecaCompletamenteAlocadaGateway,
+        ReceberPaymentDoneGateway {
 
     private final OrdemServicoRepository ordemServicoRepository;
     private final FuncionarioRepository funcionarioRepository;
@@ -56,7 +57,7 @@ public class OrdemServicoGatewayImpl implements
 
     @Override
     public Proprietario getProprietarioPorId(Long id) {
-        return proprietarioRepository.getActiveById(id);
+        return proprietarioRepository.getActiveByIdWithVeiculos(id);
     }
 
     @Override

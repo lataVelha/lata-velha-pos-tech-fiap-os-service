@@ -11,6 +11,8 @@ public interface ProprietarioRepository {
 
     Proprietario getActiveById(Long id);
 
+    Proprietario getActiveByIdWithVeiculos(Long id);
+
     Proprietario findActiveByDocumento(String documento);
 
     Proprietario findInactiveById(Long id);
