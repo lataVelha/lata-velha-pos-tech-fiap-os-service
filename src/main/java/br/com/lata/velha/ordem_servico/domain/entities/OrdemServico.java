@@ -118,8 +118,14 @@ public final class OrdemServico {
         touch();
     }
 
+    public void pagar() {
+        validarStatus(StatusOrdemServico.FINALIZADA);
+        mudarStatus(StatusOrdemServico.PAGA);
+        touch();
+    }
+
     public void entregar(Long atendenteId) {
-        if (!this.isFinalizada() && !this.isReprovada())
+        if (!this.isFinalizada() && !this.isReprovada() && !this.isPaga())
             throw new IllegalStateException("Esta Ordem de Serviço não foi Finalizada: " + this.getId());
         this.atendenteInicioId =atendenteId;
         mudarStatus(StatusOrdemServico.ENTREGUE);
@@ -196,6 +202,10 @@ public final class OrdemServico {
 
     public boolean isFinalizada() {
         return this.status.equals(StatusOrdemServico.FINALIZADA);
+    }
+
+    public boolean isPaga() {
+        return this.status.equals(StatusOrdemServico.PAGA);
     }
 
     public boolean todosServicosConcluidos() {

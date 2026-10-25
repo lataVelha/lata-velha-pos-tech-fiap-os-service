@@ -1,8 +1,10 @@
 package br.com.lata.velha.ordem_servico.infrastructure.config;
 
+import br.com.lata.velha.ordem_servico.application.event_handlers.CobrancaEmitidaEventHandler;
 import br.com.lata.velha.ordem_servico.application.event_handlers.DeducaoEstoqueFalhouEventHandler;
 import br.com.lata.velha.ordem_servico.application.event_handlers.InventoryCheckedEventHandler;
 import br.com.lata.velha.ordem_servico.application.event_handlers.OrcamentoReprovadoEventHandler;
+import br.com.lata.velha.ordem_servico.application.event_handlers.PaymentDoneEventHandler;
 import br.com.lata.velha.ordem_servico.application.event_handlers.PecaCompletamenteAlocadaEventHandler;
 import br.com.lata.velha.ordem_servico.application.services.ordemservico.NotificarOrdemServicoGateway;
 import br.com.lata.velha.ordem_servico.application.services.ordemservico.NotificarOrdemServicoService;
@@ -10,8 +12,11 @@ import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.Recebe
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberInventoryCheckedUseCase;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberOrcamentoReprovadoGateway;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberOrcamentoReprovadoUseCase;
+import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberPaymentDoneGateway;
+import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberPaymentDoneUseCase;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberPecaCompletamenteAlocadaGateway;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberPecaCompletamenteAlocadaUseCase;
+import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.RegistrarCobrancaEmitidaUseCase;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.RegistrarFalhaDeducaoEstoqueUseCase;
 import br.com.lata.velha.shared.application.gateways.EmailProvider;
 import br.com.lata.velha.shared.application.gateways.EmailTemplateProvider;
@@ -31,6 +36,7 @@ public class OrdemServicoEventosBeansConfig {
     private final ReceberInventoryCheckedGateway receberInventoryCheckedGateway;
     private final ReceberOrcamentoReprovadoGateway receberOrcamentoReprovadoGateway;
     private final ReceberPecaCompletamenteAlocadaGateway receberPecaCompletamenteAlocadaGateway;
+    private final ReceberPaymentDoneGateway receberPaymentDoneGateway;
 
     @Bean
     public ReceberInventoryCheckedUseCase receberInventoryCheckedUseCase() {
@@ -53,6 +59,16 @@ public class OrdemServicoEventosBeansConfig {
     }
 
     @Bean
+    public ReceberPaymentDoneUseCase receberPaymentDoneUseCase() {
+        return new ReceberPaymentDoneUseCase(receberPaymentDoneGateway, notificarOrdemServicoService(), logger);
+    }
+
+    @Bean
+    public RegistrarCobrancaEmitidaUseCase registrarCobrancaEmitidaUseCase() {
+        return new RegistrarCobrancaEmitidaUseCase(logger);
+    }
+
+    @Bean
     public InventoryCheckedEventHandler inventoryCheckedEventHandler() {
         return new InventoryCheckedEventHandler(receberInventoryCheckedUseCase());
     }
@@ -70,6 +86,16 @@ public class OrdemServicoEventosBeansConfig {
     @Bean
     public DeducaoEstoqueFalhouEventHandler deducaoEstoqueFalhouEventHandler() {
         return new DeducaoEstoqueFalhouEventHandler(registrarFalhaDeducaoEstoqueUseCase());
+    }
+
+    @Bean
+    public PaymentDoneEventHandler paymentDoneEventHandler() {
+        return new PaymentDoneEventHandler(receberPaymentDoneUseCase());
+    }
+
+    @Bean
+    public CobrancaEmitidaEventHandler cobrancaEmitidaEventHandler() {
+        return new CobrancaEmitidaEventHandler(registrarCobrancaEmitidaUseCase());
     }
 
     private NotificarOrdemServicoService notificarOrdemServicoService() {

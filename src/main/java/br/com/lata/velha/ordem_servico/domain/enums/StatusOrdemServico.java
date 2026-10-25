@@ -8,6 +8,7 @@ public enum StatusOrdemServico {
     APROVADA,
     EM_EXECUCAO,
     FINALIZADA,
+    PAGA,
     REPROVADA,
     ENTREGUE;
 
