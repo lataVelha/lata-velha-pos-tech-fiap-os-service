@@ -3,6 +3,7 @@ package br.com.lata.velha.ordem_servico.infrastructure.config;
 import br.com.lata.velha.ordem_servico.application.event_handlers.CobrancaEmitidaEventHandler;
 import br.com.lata.velha.ordem_servico.application.event_handlers.DeducaoEstoqueFalhouEventHandler;
 import br.com.lata.velha.ordem_servico.application.event_handlers.InventoryCheckedEventHandler;
+import br.com.lata.velha.ordem_servico.application.event_handlers.OrcamentoAprovadoEventHandler;
 import br.com.lata.velha.ordem_servico.application.event_handlers.OrcamentoReprovadoEventHandler;
 import br.com.lata.velha.ordem_servico.application.event_handlers.PaymentDoneEventHandler;
 import br.com.lata.velha.ordem_servico.application.event_handlers.PecaCompletamenteAlocadaEventHandler;
@@ -10,6 +11,8 @@ import br.com.lata.velha.ordem_servico.application.services.ordemservico.Notific
 import br.com.lata.velha.ordem_servico.application.services.ordemservico.NotificarOrdemServicoService;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberInventoryCheckedGateway;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberInventoryCheckedUseCase;
+import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberOrcamentoAprovadoGateway;
+import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberOrcamentoAprovadoUseCase;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberOrcamentoReprovadoGateway;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberOrcamentoReprovadoUseCase;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberPaymentDoneGateway;
@@ -35,6 +38,7 @@ public class OrdemServicoEventosBeansConfig {
     private final EmailTemplateProvider templateProvider;
     private final ReceberInventoryCheckedGateway receberInventoryCheckedGateway;
     private final ReceberOrcamentoReprovadoGateway receberOrcamentoReprovadoGateway;
+    private final ReceberOrcamentoAprovadoGateway receberOrcamentoAprovadoGateway;
     private final ReceberPecaCompletamenteAlocadaGateway receberPecaCompletamenteAlocadaGateway;
     private final ReceberPaymentDoneGateway receberPaymentDoneGateway;
 
@@ -71,6 +75,16 @@ public class OrdemServicoEventosBeansConfig {
     @Bean
     public InventoryCheckedEventHandler inventoryCheckedEventHandler() {
         return new InventoryCheckedEventHandler(receberInventoryCheckedUseCase());
+    }
+
+    @Bean
+    public ReceberOrcamentoAprovadoUseCase receberOrcamentoAprovadoUseCase() {
+        return new ReceberOrcamentoAprovadoUseCase(receberOrcamentoAprovadoGateway, notificarOrdemServicoService(), logger);
+    }
+
+    @Bean
+    public OrcamentoAprovadoEventHandler orcamentoAprovadoEventHandler() {
+        return new OrcamentoAprovadoEventHandler(receberOrcamentoAprovadoUseCase());
     }
 
     @Bean

@@ -33,6 +33,7 @@ public class OrdemServicoGatewayImpl implements
         ReceberAprovacaoOrcamentoClienteGateway,
         ReceberInventoryCheckedGateway,
         ReceberOrcamentoReprovadoGateway,
+        ReceberOrcamentoAprovadoGateway,
         ReceberPecaCompletamenteAlocadaGateway,
         ReceberPaymentDoneGateway {
 
