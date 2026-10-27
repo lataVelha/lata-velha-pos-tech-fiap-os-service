@@ -34,9 +34,6 @@ public class AprovarOrdemServicoUseCase {
         validateServicos(ordemServico, input.servicos());
         var statusPorId = input.getServiceStatusMap();
 
-        // TODO: a reserva de estoque (e a notificação de encomenda em caso de falta)
-        // deixou de ser feita aqui - agora é responsabilidade do InventoryService,
-        // acionado via evento OrcamentoAprovado -> InventoryChecked
         ordemServico.getExecucaoServicos().forEach(execucaoServico -> {
             var novoStatus = statusPorId.get(execucaoServico.getId());
             if (novoStatus == null) novoStatus = StatusExecucaoServico.RECUSADO;

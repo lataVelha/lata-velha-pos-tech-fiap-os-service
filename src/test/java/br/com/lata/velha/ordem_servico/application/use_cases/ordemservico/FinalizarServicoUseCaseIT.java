@@ -8,6 +8,7 @@ import br.com.lata.velha.ordem_servico.application.services.ordemservico.Notific
 import br.com.lata.velha.ordem_servico.domain.enums.StatusExecucaoServico;
 import br.com.lata.velha.ordem_servico.domain.enums.StatusOrdemServico;
 import br.com.lata.velha.ordem_servico.infrastructure.persistence.entities.*;
+import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.shared.application.logging.Logger;
 import br.com.lata.velha.shared.domain.value_objects.UserId;
 import jakarta.persistence.EntityManager;
@@ -45,6 +46,7 @@ class FinalizarServicoUseCaseIT {
 
     @MockBean private EmailProvider emailProvider;
     @MockBean private EmailTemplateProvider emailTemplateProvider;
+    @MockBean private EventPublisher eventPublisher;
 
     private FinalizarServicoUseCase useCase;
 
@@ -56,7 +58,7 @@ class FinalizarServicoUseCaseIT {
     @BeforeEach
     void setUp() {
         var notificarService = new NotificarOrdemServicoService(notificarGateway, emailProvider, emailTemplateProvider, logger);
-        useCase = new FinalizarServicoUseCase(gateway, notificarService, logger);
+        useCase = new FinalizarServicoUseCase(gateway, notificarService, eventPublisher, logger);
 
         RoleEntity role = new RoleEntity(null, "MECANICO");
         em.persist(role);
@@ -176,9 +178,4 @@ class FinalizarServicoUseCaseIT {
         OrdemServicoEntity osAtualizada = em.find(OrdemServicoEntity.class, osId);
         assertThat(osAtualizada.getStatus()).isEqualTo(StatusOrdemServico.EM_EXECUCAO);
     }
-
-    // TODO: a baixa de estoque (e o acompanhamento de peças instaladas) agora é
-    // responsabilidade do InventoryService, via evento ServiceEnded
-    // (general-flow.md passo 13-14) - os testes que persistiam
-    // PecaEntity/PecaAlocadaEntity/PecaEstoqueEntity locais foram removidos daqui.
 }

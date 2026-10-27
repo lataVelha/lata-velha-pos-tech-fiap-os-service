@@ -42,6 +42,16 @@ public class ProprietarioRepositoryImpl implements ProprietarioRepository {
     }
 
     @Override
+    public Proprietario getActiveByIdWithVeiculos(Long id) {
+        return jpaRepository.findByIdAndAtivoTrueWithVeiculos(id)
+                .map(mapper::toDomain)
+                .orElseThrow(() -> {
+                    logger.logWarn("Proprietário ativo não encontrado - proprietarioId={}", id);
+                    return ProprietarioNotFoundException.fromId(id);
+                });
+    }
+
+    @Override
     public Proprietario findActiveByDocumento(String documento) {
         return jpaRepository.findByDocumentoAndAtivoTrue(documento)
                 .map(mapper::toDomain)

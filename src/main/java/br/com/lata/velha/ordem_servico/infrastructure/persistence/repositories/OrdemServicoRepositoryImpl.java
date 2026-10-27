@@ -73,7 +73,7 @@ public class OrdemServicoRepositoryImpl implements OrdemServicoRepository {
 
     @Override
     public OrdemServico getByIdWithExecucoesAndPecas(Long id) {
-        var entity = jpaRepository.findById(id)
+        var entity = jpaRepository.findByIdWithHistorico(id)
                 .orElseThrow(() -> {
                     logger.logWarn("Ordem de serviço não encontrada - osId={}", id);
                     return OrdemServicoNotFoundException.fromId(id);

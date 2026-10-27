@@ -66,9 +66,6 @@ public final class ExecucaoServico {
     public void iniciar(Long mecanicoResponsavelId) {
         if (!this.isAprovado())
             throw new IllegalStateException("Só serviços aprovados podem ser iniciados");
-        // TODO: gate de "peças faltantes" deve vir de um futuro InventoryChecked
-        // (general-flow.md passo 8-10) em vez de estado local - InventoryService
-        // é quem sabe se há peça em falta.
         this.status = StatusExecucaoServico.EM_EXECUCAO;
         this.mecanicoResponsavelId = mecanicoResponsavelId;
         this.iniciadoEm = LocalDateTime.now();
@@ -78,10 +75,22 @@ public final class ExecucaoServico {
     public void finalizar() {
         if (status != StatusExecucaoServico.EM_EXECUCAO)
             throw new IllegalStateException("Não é possível finalizar um serviço que não está em execução");
-        // TODO: baixa/instalação de peças passa a ser responsabilidade exclusiva do
-        // InventoryService via evento ServiceEnded (general-flow.md passo 13-14).
         this.status = StatusExecucaoServico.FINALIZADO;
         this.terminadoEm = LocalDateTime.now();
+        touch();
+    }
+
+    public void marcarAguardandoPeca() {
+        if (this.status != StatusExecucaoServico.APROVADO)
+            throw new IllegalStateException("Só serviços aprovados podem aguardar peça");
+        this.status = StatusExecucaoServico.AGUARDANDO_PECA;
+        touch();
+    }
+
+    public void confirmarPecaDisponivel() {
+        if (this.status != StatusExecucaoServico.AGUARDANDO_PECA)
+            throw new IllegalStateException("Só serviços aguardando peça podem ter a peça confirmada");
+        this.status = StatusExecucaoServico.APROVADO;
         touch();
     }
 
@@ -116,6 +125,10 @@ public final class ExecucaoServico {
 
     public boolean isConcluido() {
         return this.isFinalizado() || this.isRecusado();
+    }
+
+    public boolean isAguardandoPeca() {
+        return this.status.equals(StatusExecucaoServico.AGUARDANDO_PECA);
     }
 
     public Long getId() {
@@ -188,8 +201,6 @@ public final class ExecucaoServico {
     }
 
     private StatusExecucaoServico statusAprovacao() {
-        // TODO: o estado AGUARDANDO_PECA deve ser definido por um futuro handler do
-        // evento InventoryChecked (general-flow.md passo 8-10), não mais localmente.
         return StatusExecucaoServico.APROVADO;
     }
 }

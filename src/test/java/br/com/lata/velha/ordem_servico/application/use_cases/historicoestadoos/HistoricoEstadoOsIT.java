@@ -12,6 +12,7 @@ import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.Inicia
 import br.com.lata.velha.ordem_servico.domain.enums.StatusExecucaoServico;
 import br.com.lata.velha.ordem_servico.domain.enums.StatusOrdemServico;
 import br.com.lata.velha.ordem_servico.infrastructure.persistence.entities.*;
+import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.shared.application.logging.Logger;
 import br.com.lata.velha.shared.domain.value_objects.UserId;
 import jakarta.persistence.EntityManager;
@@ -53,6 +54,7 @@ class HistoricoEstadoOsIT {
 
     @MockBean private EmailProvider emailProvider;
     @MockBean private EmailTemplateProvider emailTemplateProvider;
+    @MockBean private EventPublisher eventPublisher;
 
     private IniciarDiagnosticoUseCase iniciarDiagnosticoUseCase;
     private FinalizarDiagnosticoUseCase finalizarDiagnosticoUseCase;
@@ -66,7 +68,7 @@ class HistoricoEstadoOsIT {
     void setUp() {
         var notificarService = new NotificarOrdemServicoService(notificarGateway, emailProvider, emailTemplateProvider, logger);
         iniciarDiagnosticoUseCase = new IniciarDiagnosticoUseCase(iniciarDiagnosticoGateway, notificarService, logger);
-        finalizarDiagnosticoUseCase = new FinalizarDiagnosticoUseCase(finalizarDiagnosticoGateway, notificarService, logger);
+        finalizarDiagnosticoUseCase = new FinalizarDiagnosticoUseCase(finalizarDiagnosticoGateway, notificarService, eventPublisher, logger);
         buscarHistoricoEstadoUseCase = new BuscarHistoricoEstadoUseCase(buscarHistoricoEstadoOsGateway, logger);
 
         RoleEntity role = new RoleEntity(null, "MECANICO");

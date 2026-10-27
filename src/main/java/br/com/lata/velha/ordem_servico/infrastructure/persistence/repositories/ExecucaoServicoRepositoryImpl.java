@@ -40,7 +40,7 @@ public class ExecucaoServicoRepositoryImpl implements ExecucaoServicoRepository 
 
     @Override
     public ExecucaoServico findById(Long id) {
-        return jpaRepository.findById(id)
+        return jpaRepository.findByIdWithPecas(id)
                 .map(ExecucaoServicoEntity::toDomain)
                 .orElseThrow(() -> {
                     logger.logWarn("Execução de serviço não encontrada - execucaoServicoId={}", id);

@@ -8,6 +8,7 @@ import br.com.lata.velha.ordem_servico.application.services.ordemservico.*;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.*;
 import br.com.lata.velha.ordem_servico.application.use_cases.proprietario.CriarProprietarioGateway;
 import br.com.lata.velha.ordem_servico.application.use_cases.veiculo.CriarVeiculoGateway;
+import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.shared.application.logging.Logger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +44,7 @@ public class OrdemServicoBeansConfig {
     private final RetirarVeiculoGateway retirarVeiculoGateway;
     private final ReceberAprovacaoOrcamentoClienteGateway receberAprovacaoGateway;
     private final ReceberAprovacaoOrcamentoClientePresenter receberAprovacaoPresenter;
+    private final EventPublisher eventPublisher;
 
     @Bean
     public OrdemServicoCleanController ordemServicoCleanController() {
@@ -72,6 +74,7 @@ public class OrdemServicoBeansConfig {
                 retirarVeiculoGateway,
                 receberAprovacaoGateway,
                 receberAprovacaoPresenter,
+                eventPublisher,
                 logger);
     }
 }

@@ -135,6 +135,11 @@ public class NotificarOrdemServicoService {
                     "Todos os serviços do seu veículo foram concluídos. Seu veículo está pronto para retirada.",
                     "Serviços Finalizados"
             );
+            case PAGA -> new StatusConfig(
+                    "Pagamento Confirmado",
+                    "Recebemos a confirmação do pagamento. Seu veículo está liberado para retirada.",
+                    "Pagamento Confirmado"
+            );
             case REPROVADA -> new StatusConfig(
                     "Serviços Recusados",
                     "Todos os serviços foram reprovados!",
