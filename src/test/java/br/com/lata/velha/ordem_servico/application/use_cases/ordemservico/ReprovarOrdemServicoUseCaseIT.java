@@ -3,6 +3,7 @@ package br.com.lata.velha.ordem_servico.application.use_cases.ordemservico;
 import br.com.lata.velha.authentication.infrastructure.persistence.entities.RoleEntity;
 import br.com.lata.velha.shared.application.gateways.EmailProvider;
 import br.com.lata.velha.shared.application.gateways.EmailTemplateProvider;
+import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.ordem_servico.application.services.ordemservico.NotificarOrdemServicoGateway;
 import br.com.lata.velha.ordem_servico.application.services.ordemservico.NotificarOrdemServicoService;
 import br.com.lata.velha.ordem_servico.domain.enums.StatusExecucaoServico;
@@ -45,6 +46,7 @@ class ReprovarOrdemServicoUseCaseIT {
 
     @MockBean private EmailProvider emailProvider;
     @MockBean private EmailTemplateProvider emailTemplateProvider;
+    @MockBean private EventPublisher eventPublisher;
 
     private ReprovarOrdemServicoUseCase useCase;
 
@@ -57,7 +59,7 @@ class ReprovarOrdemServicoUseCaseIT {
     @BeforeEach
     void setUp() {
         var notificarService = new NotificarOrdemServicoService(notificarGateway, emailProvider, emailTemplateProvider, logger);
-        useCase = new ReprovarOrdemServicoUseCase(gateway, notificarService, logger);
+        useCase = new ReprovarOrdemServicoUseCase(gateway, notificarService, eventPublisher, logger);
 
         RoleEntity role = new RoleEntity(null, "ATENDENTE");
         em.persist(role);

@@ -6,6 +6,8 @@ import br.com.lata.velha.ordem_servico.domain.entities.Funcionario;
 import br.com.lata.velha.ordem_servico.domain.entities.OrdemServico;
 import br.com.lata.velha.ordem_servico.domain.enums.StatusExecucaoServico;
 import br.com.lata.velha.ordem_servico.domain.enums.StatusOrdemServico;
+import br.com.lata.velha.ordem_servico.domain.events.OrcamentoReprovadoEvent;
+import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.shared.application.logging.Logger;
 import br.com.lata.velha.shared.domain.value_objects.UserId;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +33,7 @@ class ReprovarOrdemServicoUseCaseTest {
 
     @Mock private ReprovarOrdemServicoGateway gateway;
     @Mock private NotificarOrdemServicoService notificarService;
+    @Mock private EventPublisher eventPublisher;
     @Mock private Logger logger;
 
     private ReprovarOrdemServicoUseCase useCase;
@@ -43,7 +46,7 @@ class ReprovarOrdemServicoUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new ReprovarOrdemServicoUseCase(gateway, notificarService, logger);
+        useCase = new ReprovarOrdemServicoUseCase(gateway, notificarService, eventPublisher, logger);
         atendente = new Funcionario(ATENDENTE_ID, "Ana Atendente", null, null);
         userId = UserId.random();
     }
@@ -120,6 +123,21 @@ class ReprovarOrdemServicoUseCaseTest {
         useCase.execute(new ReprovarOrdemServicoUseCase.Input(OS_ID, userId));
 
         verify(notificarService).execute(os);
+    }
+
+    @Test
+    @DisplayName("deve publicar OrcamentoReprovado após salvar a OS")
+    void devePublicarOrcamentoReprovado() {
+        var os = buildOsAguardandoAprovacao(List.of(buildExecPendente(10L)));
+
+        when(gateway.getOrdemServicoPorId(OS_ID)).thenReturn(os);
+        when(gateway.getFuncionarioPorUserId(userId)).thenReturn(atendente);
+        when(gateway.salvarOrdemServico(any())).thenReturn(os);
+
+        useCase.execute(new ReprovarOrdemServicoUseCase.Input(OS_ID, userId));
+
+        verify(eventPublisher).publish(argThat(event ->
+                event instanceof OrcamentoReprovadoEvent reprovado && OS_ID.equals(reprovado.getOsId())));
     }
 
     @Test
