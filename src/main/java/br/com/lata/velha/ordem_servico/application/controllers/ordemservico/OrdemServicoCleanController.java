@@ -180,7 +180,7 @@ public class OrdemServicoCleanController {
 
     public void reprovar(ReprovarOrdemServicoUseCase.Input input) {
         logger.logInfo("Iniciando reprovação de ordem de serviço - osId={}", input.osId());
-        new ReprovarOrdemServicoUseCase(reprovarGateway, notificarService, logger).execute(input);
+        new ReprovarOrdemServicoUseCase(reprovarGateway, notificarService, eventPublisher, logger).execute(input);
         logger.logInfo("Reprovação de ordem de serviço concluída com sucesso - osId={}", input.osId());
     }
 

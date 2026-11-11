@@ -1,6 +1,8 @@
 package br.com.lata.velha.ordem_servico.application.use_cases.ordemservico;
 
 import br.com.lata.velha.ordem_servico.application.services.ordemservico.NotificarOrdemServicoService;
+import br.com.lata.velha.ordem_servico.domain.events.OrcamentoReprovadoEvent;
+import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.shared.application.logging.Logger;
 import br.com.lata.velha.shared.domain.value_objects.UserId;
 
@@ -8,13 +10,16 @@ public class ReprovarOrdemServicoUseCase {
 
     private final ReprovarOrdemServicoGateway gateway;
     private final NotificarOrdemServicoService notificarService;
+    private final EventPublisher eventPublisher;
     private final Logger logger;
 
     public ReprovarOrdemServicoUseCase(ReprovarOrdemServicoGateway gateway,
                                        NotificarOrdemServicoService notificarService,
+                                       EventPublisher eventPublisher,
                                        Logger logger) {
         this.gateway = gateway;
         this.notificarService = notificarService;
+        this.eventPublisher = eventPublisher;
         this.logger = logger;
     }
 
@@ -32,6 +37,9 @@ public class ReprovarOrdemServicoUseCase {
 
         logger.logInfo("Salvando reprovação da OS - osId={}", input.osId());
         gateway.salvarOrdemServico(ordemServico);
+
+        logger.logInfo("Publicando OrcamentoReprovado - osId={}", ordemServico.getId());
+        eventPublisher.publish(new OrcamentoReprovadoEvent(ordemServico.getId()));
 
         notificarService.execute(ordemServico);
         logger.logInfo("Ordem de serviço reprovada com sucesso - osId={}", ordemServico.getId());
