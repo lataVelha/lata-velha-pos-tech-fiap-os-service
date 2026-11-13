@@ -7,6 +7,13 @@ data:
   ENVIRONMENT: "prod"
   SPRING_JPA_HIBERNATE_DDL_AUTO: "none"
   SPRING_FLYWAY_ENABLED: "true"
+  # O RDS do infra-db e compartilhado com o app baseline (schema public).
+  # O os-service roda as proprias migrations em um schema dedicado, criado
+  # pelo Flyway no primeiro startup. O currentSchema da JDBC URL garante que
+  # o Hibernate/consultas usem o mesmo schema.
+  SPRING_FLYWAY_SCHEMAS: "${db_schema}"
+  SPRING_FLYWAY_DEFAULT_SCHEMA: "${db_schema}"
+  SPRING_FLYWAY_CREATE_SCHEMAS: "true"
   SPRING_MAIL_HOST: "smtp.gmail.com"
   SPRING_MAIL_PORT: "587"
   JWT_ISSUER: "lata-velha"
@@ -20,6 +27,10 @@ data:
   SERVICE_VERSION: "${service_version}"
   OTEL_RESOURCE_ATTRIBUTES: "deployment.environment.name=prod,service.version=${service_version},service.name=lata-velha-os-service"
   MESSAGING_PROVIDER: "sqs"
+  # O starter AMQP continua no classpath; sem desabilitar o indicator o
+  # /actuator/health (usado pelo startupProbe) fica DOWN tentando um RabbitMQ
+  # em localhost:5672 que nao existe no cluster (o broker e SQS/SNS).
+  MANAGEMENT_HEALTH_RABBIT_ENABLED: "false"
   MESSAGING_SQS_REGION: "us-east-1"
   MESSAGING_SQS_TOPIC_ARN: "${messaging_topic_arn}"
   MESSAGING_SQS_QUEUE_URL: "${messaging_queue_url}"

@@ -22,6 +22,16 @@ data "terraform_remote_state" "messaging" {
 locals {
   infra_db  = data.terraform_remote_state.infra_db.outputs
   messaging = data.terraform_remote_state.messaging.outputs
+
+  # O RDS do infra-db e compartilhado com o `app` (baseline da transicao),
+  # que roda as migrations dele no schema `public` do banco `lata_velha`.
+  # O os-service tem migrations proprias (e incompativeis com as do app:
+  # PECA_NECESSARIA x PECA_ALOCADA, sem VALOR_TOTAL etc.), entao precisa de
+  # um schema dedicado. Sem isso o Flyway do os-service falha no startup
+  # (checksum mismatch / tabela ja existe) e o Deployment nunca fica Ready.
+  db_schema = var.db_schema
+
+  db_url = "jdbc:postgresql://${local.infra_db.rds_endpoint}/${local.infra_db.db_name}?currentSchema=${local.db_schema}"
 }
 
 module "app" {
@@ -29,7 +39,8 @@ module "app" {
 
   docker_image  = var.docker_image
   node_port     = var.node_port
-  db_url        = "jdbc:postgresql://${local.infra_db.rds_endpoint}/${local.infra_db.db_name}"
+  db_url        = local.db_url
+  db_schema     = local.db_schema
   db_username   = local.infra_db.db_username
   db_password   = local.infra_db.db_password
   mail_username = var.mail_username

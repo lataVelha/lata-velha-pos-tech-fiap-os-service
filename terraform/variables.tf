@@ -40,6 +40,12 @@ variable "node_port" {
   default     = 30082
 }
 
+variable "db_schema" {
+  description = "Schema PostgreSQL dedicado do os-service. O `app` baseline usa o schema public do mesmo banco do infra-db; manter schemas separados evita colisao de Flyway/migrations."
+  type        = string
+  default     = "lata_velha_os"
+}
+
 variable "docker_image" {
   description = "Imagem ECR da aplicacao (definida pelo pipeline apos o build/push)"
   type        = string

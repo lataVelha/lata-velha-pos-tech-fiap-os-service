@@ -7,6 +7,9 @@ state_bucket = "lata-velha-tfstate-<account-id>"
 cluster_name = "lata-velha-eks"
 node_port    = 30082
 
+# Schema dedicado no RDS compartilhado do infra-db (o app baseline usa public).
+db_schema = "lata_velha_os"
+
 # Obrigatórias: o pod entra em CrashLoopBackOff sem SMTP autenticado.
 mail_username = "seu-email@gmail.com"
 mail_password = "sua-app-password"

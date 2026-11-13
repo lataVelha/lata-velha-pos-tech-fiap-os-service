@@ -16,6 +16,7 @@ resource "kubectl_manifest" "configmap" {
     messaging_topic_arn = var.messaging_topic_arn
     messaging_queue_url = var.messaging_queue_url
     service_version     = var.service_version
+    db_schema           = var.db_schema
   })
   depends_on = [kubectl_manifest.namespace]
 }
@@ -37,6 +38,15 @@ resource "kubectl_manifest" "deployment" {
   yaml_body = templatefile("${local.k8s_dir}/deployment.yaml", {
     docker_image = var.docker_image
   })
+
+  # O provider gavinbunney/kubectl usa um timeout fixo de 10min no create.
+  # Quando o rollout nao termina (pods em CrashLoop/Pending), o retry interno
+  # estoura o mesmo contexto e o erro final vira o enganoso
+  # "client rate limiter Wait returned an error: context deadline exceeded",
+  # escondendo a causa real. A espera/verificacao do rollout fica no job
+  # `verify` (kubectl rollout status + smoke test), que mostra pods/eventos/logs.
+  wait_for_rollout = false
+
   depends_on = [
     kubectl_manifest.serviceaccount,
     kubectl_manifest.configmap,
