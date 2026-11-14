@@ -1,7 +1,5 @@
 package br.com.lata.velha.ordem_servico.api.controllers;
 
-import br.com.lata.velha.ordem_servico.api.dtos.ordem_servico.AprovarOrdemServicoRequest;
-import br.com.lata.velha.ordem_servico.api.dtos.ordem_servico.AprovarOrdemServicoResponse;
 import br.com.lata.velha.ordem_servico.api.dtos.ordem_servico.CriarOrdemServicoCompletaRequest;
 import br.com.lata.velha.ordem_servico.api.dtos.ordem_servico.CriarOrdemServicoRequest;
 import br.com.lata.velha.ordem_servico.api.dtos.ordem_servico.ReceberAprovacaoOrcamentoRequest;
@@ -150,42 +148,6 @@ public class OrdemServicoController {
             @Parameter(description = "ID da ordem de serviço", example = "20") @PathVariable Long idOs,
             @AuthenticationPrincipal Jwt jwt) {
         cleanController.finalizarDiagnostico(new FinalizarDiagnosticoUseCase.Input(idOs, UserId.fromString(jwt.getSubject())));
-        return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/{idOs}/aprovar")
-    @Transactional
-    @Operation(
-            summary = "Aprovar ou reprovar serviços da OS",
-            description = """
-                    **ATENDENTE** — Avalia cada serviço com `APROVADO` ou `RECUSADO`. Serviços não informados são automaticamente recusados. Pelo menos um deve ser aprovado.
-
-                    A reserva de estoque (e o aviso de encomenda, se insuficiente) é feita pelo InventoryService. E-mail de confirmação enviado ao proprietário. Transição: `AGUARDANDO_APROVACAO` → `APROVADA`."""
-    )
-    @ApiResponse(responseCode = "200", description = "OS aprovada")
-    @ApiResponse(responseCode = "400", description = "Status inválido ou ID de serviço não pertence à OS")
-    @ApiResponse(responseCode = "404", description = "OS ou funcionário não encontrado")
-    @ApiResponse(responseCode = "422", description = "OS não está em AGUARDANDO_APROVACAO ou nenhum serviço foi aprovado")
-    public ResponseEntity<AprovarOrdemServicoResponse> approve(
-            @Parameter(description = "ID da ordem de serviço", example = "20") @PathVariable Long idOs,
-            @Valid @RequestBody AprovarOrdemServicoRequest request, @AuthenticationPrincipal Jwt jwt
-    ) {
-        return ResponseEntity.ok(cleanController.aprovar(request.toInput(UserId.fromString(jwt.getSubject()), idOs)));
-    }
-
-    @PatchMapping("/{idOs}/reprovar")
-    @Transactional
-    @Operation(
-            summary = "Reprovar a OS inteira",
-            description = "**ATENDENTE** — Recusa todos os serviços e encerra a OS. Use quando o proprietário recusar todos os serviços identificados. Para aprovação parcial, use `PATCH /aprovar`. Transição: `AGUARDANDO_APROVACAO` → `REPROVADA` (terminal)."
-    )
-    @ApiResponse(responseCode = "200", description = "OS reprovada — status REPROVADA")
-    @ApiResponse(responseCode = "404", description = "OS ou funcionário não encontrado")
-    @ApiResponse(responseCode = "422", description = "OS não está no status AGUARDANDO_APROVACAO")
-    public ResponseEntity<Void> reprove(
-            @Parameter(description = "ID da ordem de serviço", example = "20") @PathVariable Long idOs,
-            @AuthenticationPrincipal Jwt jwt) {
-        cleanController.reprovar(new ReprovarOrdemServicoUseCase.Input(idOs, UserId.fromString(jwt.getSubject())));
         return ResponseEntity.ok().build();
     }
 

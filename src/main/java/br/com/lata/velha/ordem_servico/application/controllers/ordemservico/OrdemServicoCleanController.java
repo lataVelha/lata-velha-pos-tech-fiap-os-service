@@ -1,6 +1,5 @@
 package br.com.lata.velha.ordem_servico.application.controllers.ordemservico;
 
-import br.com.lata.velha.ordem_servico.api.dtos.ordem_servico.AprovarOrdemServicoResponse;
 import br.com.lata.velha.ordem_servico.application.dtos.response.OrdemServicoResponse;
 import br.com.lata.velha.ordem_servico.application.dtos.response.TempoMedioExecucaoResponse;
 import br.com.lata.velha.shared.application.gateways.EmailProvider;
@@ -31,8 +30,6 @@ public class OrdemServicoCleanController {
     private final CriarProprietarioGateway criarProprietarioGateway;
     private final CriarVeiculoGateway criarVeiculoGateway;
     private final AdicionarServicoGateway adicionarGateway;
-    private final AprovarOrdemServicoGateway aprovarGateway;
-    private final AprovarOrdemServicoPresenter aprovarPresenter;
     private final BuscarOrdemServicoGateway buscarGateway;
     private final BuscarOrdemServicoPresenter buscarPresenter;
     private final BuscarOrdensPorStatusOrdenadoGateway buscarOrdensPorStatusGateway;
@@ -41,7 +38,6 @@ public class OrdemServicoCleanController {
     private final BuscarTempoMedioExecucaoPresenter buscarTempoMedioPresenter;
     private final IniciarDiagnosticoGateway iniciarDiagnosticoGateway;
     private final FinalizarDiagnosticoGateway finalizarDiagnosticoGateway;
-    private final ReprovarOrdemServicoGateway reprovarGateway;
     private final IniciarServicoGateway iniciarServicoGateway;
     private final FinalizarServicoGateway finalizarServicoGateway;
     private final RetirarVeiculoGateway retirarVeiculoGateway;
@@ -58,8 +54,6 @@ public class OrdemServicoCleanController {
             CriarProprietarioGateway criarProprietarioGateway,
             CriarVeiculoGateway criarVeiculoGateway,
             AdicionarServicoGateway adicionarGateway,
-            AprovarOrdemServicoGateway aprovarGateway,
-            AprovarOrdemServicoPresenter aprovarPresenter,
             BuscarOrdemServicoGateway buscarGateway,
             BuscarOrdemServicoPresenter buscarPresenter,
             BuscarOrdensPorStatusOrdenadoGateway buscarOrdensPorStatusGateway,
@@ -68,7 +62,6 @@ public class OrdemServicoCleanController {
             BuscarTempoMedioExecucaoPresenter buscarTempoMedioPresenter,
             IniciarDiagnosticoGateway iniciarDiagnosticoGateway,
             FinalizarDiagnosticoGateway finalizarDiagnosticoGateway,
-            ReprovarOrdemServicoGateway reprovarGateway,
             IniciarServicoGateway iniciarServicoGateway,
             FinalizarServicoGateway finalizarServicoGateway,
             RetirarVeiculoGateway retirarVeiculoGateway,
@@ -86,8 +79,6 @@ public class OrdemServicoCleanController {
         this.criarProprietarioGateway = criarProprietarioGateway;
         this.criarVeiculoGateway = criarVeiculoGateway;
         this.adicionarGateway = adicionarGateway;
-        this.aprovarGateway = aprovarGateway;
-        this.aprovarPresenter = aprovarPresenter;
         this.buscarGateway = buscarGateway;
         this.buscarPresenter = buscarPresenter;
         this.buscarOrdensPorStatusGateway = buscarOrdensPorStatusGateway;
@@ -96,7 +87,6 @@ public class OrdemServicoCleanController {
         this.buscarTempoMedioPresenter = buscarTempoMedioPresenter;
         this.iniciarDiagnosticoGateway = iniciarDiagnosticoGateway;
         this.finalizarDiagnosticoGateway = finalizarDiagnosticoGateway;
-        this.reprovarGateway = reprovarGateway;
         this.iniciarServicoGateway = iniciarServicoGateway;
         this.finalizarServicoGateway = finalizarServicoGateway;
         this.retirarVeiculoGateway = retirarVeiculoGateway;
@@ -168,20 +158,6 @@ public class OrdemServicoCleanController {
         logger.logInfo("Iniciando finalização de diagnóstico - osId={}", input.idOs());
         new FinalizarDiagnosticoUseCase(finalizarDiagnosticoGateway, notificarService, eventPublisher, logger).execute(input);
         logger.logInfo("Finalização de diagnóstico concluída com sucesso - osId={}", input.idOs());
-    }
-
-    public AprovarOrdemServicoResponse aprovar(AprovarOrdemServicoUseCase.Input input) {
-        logger.logInfo("Iniciando aprovação de ordem de serviço - osId={}", input.idOs());
-        var useCase = new AprovarOrdemServicoUseCase(aprovarGateway, notificarService, logger);
-        var response = aprovarPresenter.present(useCase.execute(input));
-        logger.logInfo("Aprovação de ordem de serviço concluída com sucesso - osId={}", input.idOs());
-        return response;
-    }
-
-    public void reprovar(ReprovarOrdemServicoUseCase.Input input) {
-        logger.logInfo("Iniciando reprovação de ordem de serviço - osId={}", input.osId());
-        new ReprovarOrdemServicoUseCase(reprovarGateway, notificarService, eventPublisher, logger).execute(input);
-        logger.logInfo("Reprovação de ordem de serviço concluída com sucesso - osId={}", input.osId());
     }
 
     public void iniciarServico(IniciarServicoUseCase.Input input) {
