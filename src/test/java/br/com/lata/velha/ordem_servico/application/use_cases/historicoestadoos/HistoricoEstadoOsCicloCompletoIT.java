@@ -5,7 +5,7 @@ import br.com.lata.velha.ordem_servico.application.controllers.ordemservico.Orde
 import br.com.lata.velha.shared.application.gateways.EmailProvider;
 import br.com.lata.velha.shared.application.gateways.EmailTemplateProvider;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.AdicionarServicoUseCase;
-import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.AprovarOrdemServicoUseCase;
+import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.ReceberAprovacaoOrcamentoClienteUseCase;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.FinalizarDiagnosticoUseCase;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.FinalizarServicoUseCase;
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.IniciarDiagnosticoUseCase;
@@ -197,8 +197,8 @@ class HistoricoEstadoOsCicloCompletoIT {
         flushClear();
 
         Long execucaoId = execucaoDaOs(osId);
-        cleanController.aprovar(new AprovarOrdemServicoUseCase.Input(osId, funcionarioUserId,
-                List.of(new AprovarOrdemServicoUseCase.Input.ServicoAprovacao(execucaoId, StatusExecucaoServico.APROVADO))));
+        cleanController.receberAprovacaoOrcamentoCliente(new ReceberAprovacaoOrcamentoClienteUseCase.Input(osId,
+                List.of(new ReceberAprovacaoOrcamentoClienteUseCase.Input.ServicoAprovacao(execucaoId, StatusExecucaoServico.APROVADO))));
         flushClear();
 
         cleanController.iniciarServico(new IniciarServicoUseCase.Input(osId, execucaoId, funcionarioUserId));
