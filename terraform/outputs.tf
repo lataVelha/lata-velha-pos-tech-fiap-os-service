@@ -12,3 +12,15 @@ output "db_name" {
   description = "Nome do banco do os-service"
   value       = aws_db_instance.os.db_name
 }
+
+output "db_username" {
+  description = "Usuario master do RDS do os-service (consumido pela lambda auth-cpf)"
+  value       = var.db_username
+  sensitive   = true
+}
+
+output "db_password" {
+  description = "Senha do RDS do os-service (consumida pela lambda auth-cpf)"
+  value       = random_password.db.result
+  sensitive   = true
+}
