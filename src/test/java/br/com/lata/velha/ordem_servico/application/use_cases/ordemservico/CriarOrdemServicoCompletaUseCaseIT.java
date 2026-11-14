@@ -155,8 +155,8 @@ class CriarOrdemServicoCompletaUseCaseIT {
 
         // TODO: PECA pertence ao InventoryService. Os ids abaixo são só referências
         // opacas (sem FK local) usadas pela PECA_NECESSARIA desta execução.
-        Long filtroOleoId = 1L;
-        Long oleoMotorId = 2L;
+        String filtroOleoId = "1";
+        String oleoMotorId = "2";
 
         var servicos = List.of(new AdicionarServicoUseCase.Input.ServicoAdicionar(
                 trocaOleo.getId(),

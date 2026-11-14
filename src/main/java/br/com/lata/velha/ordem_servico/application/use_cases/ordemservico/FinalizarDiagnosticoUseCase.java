@@ -4,8 +4,8 @@ import br.com.lata.velha.ordem_servico.application.services.ordemservico.Notific
 import br.com.lata.velha.ordem_servico.domain.entities.ExecucaoServico;
 import br.com.lata.velha.ordem_servico.domain.entities.OrdemServico;
 import br.com.lata.velha.ordem_servico.domain.entities.PecaNecessaria;
-import br.com.lata.velha.ordem_servico.domain.events.DiagnosticoFinalizadoEvent;
-import br.com.lata.velha.ordem_servico.domain.events.OSEndedEvent;
+import br.com.lata.velha.shared.domain.events.DiagnosticoFinalizadoEvent;
+import br.com.lata.velha.shared.domain.events.OSEndedEvent;
 import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.shared.application.logging.Logger;
 import br.com.lata.velha.shared.domain.value_objects.UserId;

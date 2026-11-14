@@ -97,6 +97,6 @@ public class AdicionarServicoUseCase {
 
     public record Input(Long osId, List<ServicoAdicionar> servicos) {
         public record ServicoAdicionar(Long servicoId, List<PecaNecessaria> pecas, BigDecimal valorMaoDeObra) {}
-        public record PecaNecessaria(Long pecaId, Integer quantidade) {}
+        public record PecaNecessaria(String pecaId, Integer quantidade) {}
     }
 }

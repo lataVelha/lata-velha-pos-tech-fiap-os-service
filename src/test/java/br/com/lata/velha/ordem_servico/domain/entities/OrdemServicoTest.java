@@ -250,7 +250,7 @@ class OrdemServicoTest {
             base.setStatus(StatusExecucaoServico.FINALIZADO);
             ExecucaoServico recusado = execucaoFinalizada(1L);
             recusado.setStatus(StatusExecucaoServico.RECUSADO);
-            recusado.getPecasNecessarias().add(new PecaNecessaria(1L, 1L, 1L, 5, LocalDateTime.now()));
+            recusado.getPecasNecessarias().add(new PecaNecessaria(1L, "1", 1L, 5, LocalDateTime.now()));
             OrdemServico os = new OrdemServico(null, 4L, 3L, "Barulho ao frear",
                     StatusOrdemServico.EM_EXECUCAO, LocalDateTime.now(), LocalDateTime.now(), null, null, null,
                     2L, 10L, new java.util.ArrayList<>(java.util.List.of(base, recusado)));
@@ -266,7 +266,7 @@ class OrdemServicoTest {
             ExecucaoServico base = ExecucaoServico.create(999L, 1L, new BigDecimal("150.00"));
             base.setStatus(StatusExecucaoServico.FINALIZADO);
             ExecucaoServico exec = execucaoFinalizada(1L);
-            exec.getPecasNecessarias().add(new PecaNecessaria(1L, 1L, 1L, 5, LocalDateTime.now()));
+            exec.getPecasNecessarias().add(new PecaNecessaria(1L, "1", 1L, 5, LocalDateTime.now()));
             OrdemServico os = new OrdemServico(null, 4L, 3L, "Barulho ao frear",
                     StatusOrdemServico.EM_EXECUCAO, LocalDateTime.now(), LocalDateTime.now(), null, null, null,
                     2L, 10L, new java.util.ArrayList<>(java.util.List.of(base, exec)));

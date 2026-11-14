@@ -46,11 +46,11 @@ class EntityConversionTest {
     @Test
     void pecaNecessariaEntity_fromDomain_deveMapearTodosCampos() {
         var now = LocalDateTime.now();
-        var domain = new PecaNecessaria(10L, 5L, 1L, 4, now);
+        var domain = new PecaNecessaria(10L, "5", 1L, 4, now);
         var entity = PecaNecessariaEntity.fromDomain(domain);
 
         assertThat(entity.getId()).isEqualTo(10L);
-        assertThat(entity.getPecaId()).isEqualTo(5L);
+        assertThat(entity.getPecaId()).isEqualTo("5");
         assertThat(entity.getExecucaoServicoId()).isEqualTo(1L);
         assertThat(entity.getQuantidade()).isEqualTo(4);
         assertThat(entity.getAtualizado()).isEqualTo(now);
@@ -64,11 +64,11 @@ class EntityConversionTest {
     @Test
     void pecaNecessariaEntity_toDomain_deveMapearTodosCampos() {
         var now = LocalDateTime.now();
-        var entity = new PecaNecessariaEntity(20L, 6L, 2L, 3, now);
+        var entity = new PecaNecessariaEntity(20L, "6", 2L, 3, now);
         var domain = entity.toDomain();
 
         assertThat(domain.getId()).isEqualTo(20L);
-        assertThat(domain.getPecaId()).isEqualTo(6L);
+        assertThat(domain.getPecaId()).isEqualTo("6");
         assertThat(domain.getExecucaoServicoId()).isEqualTo(2L);
         assertThat(domain.getQuantidade()).isEqualTo(3);
     }
@@ -122,7 +122,7 @@ class EntityConversionTest {
     @Test
     void execucaoServicoEntity_roundTrip_comPecasDevePreservarDados() {
         var pecaNecessaria = new PecaNecessaria(
-                30L, 7L, 1L, 2, LocalDateTime.now()
+                30L, "7", 1L, 2, LocalDateTime.now()
         );
         var execucao = new ExecucaoServico(
                 3L, 12L, 102L,

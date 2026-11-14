@@ -1,8 +1,8 @@
 package br.com.lata.velha.ordem_servico.application.use_cases.ordemservico;
 
 import br.com.lata.velha.ordem_servico.application.services.ordemservico.NotificarOrdemServicoService;
-import br.com.lata.velha.ordem_servico.domain.events.OSEndedEvent;
-import br.com.lata.velha.ordem_servico.domain.events.ServiceEndedEvent;
+import br.com.lata.velha.shared.domain.events.OSEndedEvent;
+import br.com.lata.velha.shared.domain.events.ServiceEndedEvent;
 import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.shared.application.logging.Logger;
 import br.com.lata.velha.shared.domain.value_objects.UserId;

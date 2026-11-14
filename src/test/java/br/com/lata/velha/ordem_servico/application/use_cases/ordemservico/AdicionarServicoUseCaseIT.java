@@ -48,7 +48,7 @@ class AdicionarServicoUseCaseIT {
 
     private Long osId;
     private Long servicoId;
-    private Long pecaId;
+    private String pecaId;
     private Long atendenteId;
 
     @BeforeEach
@@ -96,7 +96,7 @@ class AdicionarServicoUseCaseIT {
 
         // TODO: PECA pertence ao InventoryService. pecaId aqui é só uma referência
         // opaca (sem FK local) usada pela PECA_NECESSARIA desta execução.
-        pecaId = 1L;
+        pecaId = "1";
 
         OrdemServicoEntity os = new OrdemServicoEntity();
         os.setProprietarioId(proprietario.getId());
