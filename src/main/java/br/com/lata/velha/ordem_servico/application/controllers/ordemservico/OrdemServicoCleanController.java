@@ -172,7 +172,7 @@ public class OrdemServicoCleanController {
 
     public AprovarOrdemServicoResponse aprovar(AprovarOrdemServicoUseCase.Input input) {
         logger.logInfo("Iniciando aprovação de ordem de serviço - osId={}", input.idOs());
-        var useCase = new AprovarOrdemServicoUseCase(aprovarGateway, notificarService, eventPublisher, logger);
+        var useCase = new AprovarOrdemServicoUseCase(aprovarGateway, notificarService, logger);
         var response = aprovarPresenter.present(useCase.execute(input));
         logger.logInfo("Aprovação de ordem de serviço concluída com sucesso - osId={}", input.idOs());
         return response;
