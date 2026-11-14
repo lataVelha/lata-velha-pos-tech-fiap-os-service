@@ -1,14 +1,3 @@
-# O banco de dados (RDS) e provisionado pelo repo infra-db, que publica seu
-# state neste mesmo bucket. Precisa rodar antes deste deploy.
-data "terraform_remote_state" "infra_db" {
-  backend = "s3"
-  config = {
-    bucket = var.state_bucket
-    key    = "lata-velha/infra-db/terraform.tfstate"
-    region = var.region
-  }
-}
-
 # Barramento SNS/SQS (Epic 13) — topic ARN e a fila deste serviço.
 data "terraform_remote_state" "messaging" {
   backend = "s3"
@@ -20,18 +9,12 @@ data "terraform_remote_state" "messaging" {
 }
 
 locals {
-  infra_db  = data.terraform_remote_state.infra_db.outputs
   messaging = data.terraform_remote_state.messaging.outputs
 
-  # O RDS do infra-db e compartilhado com o `app` (baseline da transicao),
-  # que roda as migrations dele no schema `public` do banco `lata_velha`.
-  # O os-service tem migrations proprias (e incompativeis com as do app:
-  # PECA_NECESSARIA x PECA_ALOCADA, sem VALOR_TOTAL etc.), entao precisa de
-  # um schema dedicado. Sem isso o Flyway do os-service falha no startup
-  # (checksum mismatch / tabela ja existe) e o Deployment nunca fica Ready.
-  db_schema = var.db_schema
-
-  db_url = "jdbc:postgresql://${local.infra_db.rds_endpoint}/${local.infra_db.db_name}?currentSchema=${local.db_schema}"
+  # RDS proprio do os-service (rds.tf). O banco e dedicado, entao o schema
+  # default `public` basta — nao precisa de currentSchema nem de Flyway
+  # schemas extras.
+  db_url = "jdbc:postgresql://${aws_db_instance.os.endpoint}/${aws_db_instance.os.db_name}"
 }
 
 module "app" {
@@ -40,9 +23,8 @@ module "app" {
   docker_image  = var.docker_image
   node_port     = var.node_port
   db_url        = local.db_url
-  db_schema     = local.db_schema
-  db_username   = local.infra_db.db_username
-  db_password   = local.infra_db.db_password
+  db_username   = var.db_username
+  db_password   = random_password.db.result
   mail_username = var.mail_username
   mail_password = var.mail_password
   dd_api_key    = var.dd_api_key

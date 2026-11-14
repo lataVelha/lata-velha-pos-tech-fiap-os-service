@@ -24,12 +24,7 @@ variable "service_version" {
 }
 
 variable "db_url" {
-  description = "JDBC URL do banco de dados (inclui currentSchema do servico)"
-  type        = string
-}
-
-variable "db_schema" {
-  description = "Schema PostgreSQL dedicado do servico (usado pelo Flyway)"
+  description = "JDBC URL do banco de dados"
   type        = string
 }
 

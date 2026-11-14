@@ -7,13 +7,6 @@ data:
   ENVIRONMENT: "prod"
   SPRING_JPA_HIBERNATE_DDL_AUTO: "none"
   SPRING_FLYWAY_ENABLED: "true"
-  # O RDS do infra-db e compartilhado com o app baseline (schema public).
-  # O os-service roda as proprias migrations em um schema dedicado, criado
-  # pelo Flyway no primeiro startup. O currentSchema da JDBC URL garante que
-  # o Hibernate/consultas usem o mesmo schema.
-  SPRING_FLYWAY_SCHEMAS: "${db_schema}"
-  SPRING_FLYWAY_DEFAULT_SCHEMA: "${db_schema}"
-  SPRING_FLYWAY_CREATE_SCHEMAS: "true"
   SPRING_MAIL_HOST: "smtp.gmail.com"
   SPRING_MAIL_PORT: "587"
   JWT_ISSUER: "lata-velha"
