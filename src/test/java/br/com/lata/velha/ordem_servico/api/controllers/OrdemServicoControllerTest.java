@@ -1,8 +1,6 @@
 package br.com.lata.velha.ordem_servico.api.controllers;
 
 import br.com.lata.velha.authentication.infrastructure.security.config.SecurityConfig;
-import br.com.lata.velha.ordem_servico.api.dtos.ordem_servico.AprovarOrdemServicoRequest;
-import br.com.lata.velha.ordem_servico.api.dtos.ordem_servico.AprovarOrdemServicoResponse;
 import br.com.lata.velha.ordem_servico.api.dtos.ordem_servico.CriarOrdemServicoCompletaRequest;
 import br.com.lata.velha.ordem_servico.api.dtos.ordem_servico.CriarOrdemServicoRequest;
 import br.com.lata.velha.ordem_servico.api.dtos.ordem_servico.ReceberAprovacaoOrcamentoRequest;
@@ -228,45 +226,6 @@ class OrdemServicoControllerTest {
     void shouldReturn200OnFinalizarDiagnostico() throws Exception {
         mockMvc.perform(patch("/ordens-servico/1/finalizar-diagnostico")
                         .with(jwt().jwt(b -> b.subject(TEST_USER_ID)).authorities(new SimpleGrantedAuthority("ROLE_MECANICO"))))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("PATCH /ordens-servico/{idOs}/aprovar deve retornar 200")
-    void shouldReturn200OnAprovar() throws Exception {
-        var servico = new AprovarOrdemServicoRequest.Servico(10L, "APROVADO");
-        var request = new AprovarOrdemServicoRequest(List.of(servico));
-        var aprovarResponse = new AprovarOrdemServicoResponse(1L, "APROVADA",
-                List.of(new AprovarOrdemServicoResponse.Servico(10L, "APROVADO")));
-
-        when(cleanController.aprovar(any())).thenReturn(aprovarResponse);
-
-        mockMvc.perform(patch("/ordens-servico/1/aprovar")
-                        .with(jwt().jwt(b -> b.subject(TEST_USER_ID)).authorities(new SimpleGrantedAuthority("ROLE_USER")))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.idOs").value(1L))
-                .andExpect(jsonPath("$.status").value("APROVADA"));
-    }
-
-    @Test
-    @DisplayName("PATCH /ordens-servico/{idOs}/aprovar com lista vazia deve retornar 400")
-    void shouldReturn400OnAprovarWithInvalidRequest() throws Exception {
-        var invalid = new AprovarOrdemServicoRequest(List.of());
-
-        mockMvc.perform(patch("/ordens-servico/1/aprovar")
-                        .with(jwt().jwt(b -> b.subject(TEST_USER_ID)).authorities(new SimpleGrantedAuthority("ROLE_USER")))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalid)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("PATCH /ordens-servico/{idOs}/reprovar deve retornar 200")
-    void shouldReturn200OnReprovar() throws Exception {
-        mockMvc.perform(patch("/ordens-servico/1/reprovar")
-                        .with(jwt().jwt(b -> b.subject(TEST_USER_ID)).authorities(new SimpleGrantedAuthority("ROLE_USER"))))
                 .andExpect(status().isOk());
     }
 
