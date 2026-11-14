@@ -41,8 +41,6 @@ public class SecurityConfig {
                         .requestMatchers("/veiculos/**").hasAnyRole(USER, ADMIN)
                         .requestMatchers("/funcionarios/**").hasAnyRole(ADMIN)
                         .requestMatchers(HttpMethod.POST, "/ordens-servico").hasAnyRole(USER, ADMIN)
-                        .requestMatchers(HttpMethod.PATCH, "/ordens-servico/*/aprovar").hasAnyRole(USER, ADMIN)
-                        .requestMatchers(HttpMethod.PATCH, "/ordens-servico/*/reprovar").hasAnyRole(USER, ADMIN)
                         .requestMatchers(HttpMethod.PATCH, "/ordens-servico/*/retirar-veiculo").hasAnyRole(USER, ADMIN)
                         .requestMatchers(HttpMethod.PATCH, "/ordens-servico/*/iniciar-diagnostico").hasAnyRole(MECANICO, ADMIN)
                         .requestMatchers(HttpMethod.PATCH, "/ordens-servico/*/adicionar-servico").hasAnyRole(MECANICO, ADMIN)

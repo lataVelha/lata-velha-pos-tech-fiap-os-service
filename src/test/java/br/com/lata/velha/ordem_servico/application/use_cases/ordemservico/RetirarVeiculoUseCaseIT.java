@@ -94,7 +94,7 @@ class RetirarVeiculoUseCaseIT {
         os.setProprietarioId(proprietario.getId());
         os.setVeiculoId(veiculo.getId());
         os.setReclamacaoProprietario("Manutenção periódica");
-        os.setStatus(StatusOrdemServico.FINALIZADA);
+        os.setStatus(StatusOrdemServico.PAGA);
         os.setAtendenteInicioId(atendenteId);
         os.setMecanicoResponsavelId(atendenteId);
         os.setFinalizadoEm(LocalDateTime.now());
@@ -107,8 +107,8 @@ class RetirarVeiculoUseCaseIT {
     }
 
     @Test
-    @DisplayName("deve alterar status para ENTREGUE quando OS está FINALIZADA e persistir no banco")
-    void deveRetirarVeiculoDeOsFinalizadaEPersistir() {
+    @DisplayName("deve alterar status para ENTREGUE quando OS está PAGA e persistir no banco")
+    void deveRetirarVeiculoDeOsPagaEPersistir() {
         useCase.execute(osId, UserId.create(atendenteUserId));
 
         em.flush();
@@ -138,7 +138,7 @@ class RetirarVeiculoUseCaseIT {
     }
 
     @Test
-    @DisplayName("deve lançar IllegalStateException quando OS não está FINALIZADA nem REPROVADA")
+    @DisplayName("deve lançar IllegalStateException quando OS não está PAGA nem REPROVADA")
     void deveLancarExcecaoQuandoStatusInvalido() {
         OrdemServicoEntity osEntity = em.find(OrdemServicoEntity.class, osId);
         osEntity.setStatus(StatusOrdemServico.EM_EXECUCAO);

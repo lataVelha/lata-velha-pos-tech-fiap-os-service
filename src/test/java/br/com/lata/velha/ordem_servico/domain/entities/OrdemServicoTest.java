@@ -48,6 +48,18 @@ class OrdemServicoTest {
         return os;
     }
 
+    private static OrdemServico paga() {
+        OrdemServico os = finalizada();
+        os.pagar();
+        return os;
+    }
+
+    private static OrdemServico finalizadaSemServicos() {
+        OrdemServico os = emDiagnostico();
+        os.finalizarDiagnostico(10L);
+        return os;
+    }
+
     private static ExecucaoServico execucaoServico(Long servicoId) {
         return ExecucaoServico.create(servicoId, 1L, new BigDecimal("150.00"));
     }
@@ -282,14 +294,15 @@ class OrdemServicoTest {
     class Entregar {
 
         @Test
-        @DisplayName("deve transitar para ENTREGUE quando OS está FINALIZADA")
+        @DisplayName("deve transitar para ENTREGUE quando OS está PAGA")
         void deveEntregarComSucesso() {
-            OrdemServico os = finalizada();
+            OrdemServico os = paga();
 
             os.entregar(2L);
 
             assertThat(os.getStatus()).isEqualTo(StatusOrdemServico.ENTREGUE);
             assertThat(os.getEntregueEm()).isNotNull();
+            assertThat(os.getAtendenteInicioId()).isEqualTo(2L);
         }
 
         @Test
@@ -305,7 +318,31 @@ class OrdemServicoTest {
         }
 
         @Test
-        @DisplayName("deve lançar exceção se status não for FINALIZADA nem REPROVADA")
+        @DisplayName("não deve entregar OS FINALIZADA com serviços antes do pagamento")
+        void naoDeveEntregarFinalizadaNaoPaga() {
+            OrdemServico os = finalizada();
+
+            assertThatThrownBy(() -> os.entregar(2L))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("antes do pagamento");
+
+            assertThat(os.getStatus()).isEqualTo(StatusOrdemServico.FINALIZADA);
+            assertThat(os.getEntregueEm()).isNull();
+        }
+
+        @Test
+        @DisplayName("deve entregar OS FINALIZADA sem serviços, pois nada é devido")
+        void deveEntregarFinalizadaSemServicos() {
+            OrdemServico os = finalizadaSemServicos();
+
+            os.entregar(2L);
+
+            assertThat(os.getStatus()).isEqualTo(StatusOrdemServico.ENTREGUE);
+            assertThat(os.getEntregueEm()).isNotNull();
+        }
+
+        @Test
+        @DisplayName("deve lançar exceção se status não permitir entrega")
         void deveLancarExcecaoSeStatusInvalido() {
             OrdemServico os = recebida();
 
@@ -354,7 +391,7 @@ class OrdemServicoTest {
         @Test
         @DisplayName("deve lançar exceção se ordem estiver ENTREGUE")
         void deveLancarExcecaoSeOrdemEntregue() {
-            OrdemServico os = finalizada();
+            OrdemServico os = paga();
             os.entregar(2L);
             ExecucaoServico servico = execucaoServico(99L);
 
