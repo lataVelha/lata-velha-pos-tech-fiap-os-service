@@ -4,6 +4,8 @@ import br.com.lata.velha.ordem_servico.application.services.ordemservico.Notific
 import br.com.lata.velha.ordem_servico.domain.entities.ExecucaoServico;
 import br.com.lata.velha.ordem_servico.domain.entities.OrdemServico;
 import br.com.lata.velha.ordem_servico.domain.enums.StatusExecucaoServico;
+import br.com.lata.velha.ordem_servico.domain.events.OrcamentoAprovadoEvent;
+import br.com.lata.velha.shared.application.gateways.EventPublisher;
 import br.com.lata.velha.shared.application.logging.Logger;
 import br.com.lata.velha.shared.domain.value_objects.UserId;
 
@@ -15,13 +17,16 @@ public class AprovarOrdemServicoUseCase {
 
     private final AprovarOrdemServicoGateway gateway;
     private final NotificarOrdemServicoService notificarService;
+    private final EventPublisher eventPublisher;
     private final Logger logger;
 
     public AprovarOrdemServicoUseCase(AprovarOrdemServicoGateway gateway,
                                       NotificarOrdemServicoService notificarService,
+                                      EventPublisher eventPublisher,
                                       Logger logger) {
         this.gateway = gateway;
         this.notificarService = notificarService;
+        this.eventPublisher = eventPublisher;
         this.logger = logger;
     }
 
@@ -61,6 +66,14 @@ public class AprovarOrdemServicoUseCase {
         notificarService.execute(ordemServico);
 
         var saved = gateway.salvarOrdemServico(ordemServico);
+
+        var itens = saved.getExecucaoServicos().stream()
+                .filter(ExecucaoServico::isAprovado)
+                .flatMap(e -> e.getPecasNecessarias().stream()
+                        .map(p -> new OrcamentoAprovadoEvent.Item(e.getId(), p.getPecaId(), p.getQuantidade())))
+                .toList();
+        eventPublisher.publish(new OrcamentoAprovadoEvent(saved.getId(), null, itens));
+
         logger.logInfo("Aprovação de ordem de serviço concluída com sucesso - osId={}, status={}", saved.getId(), saved.getStatus());
         return saved;
     }
