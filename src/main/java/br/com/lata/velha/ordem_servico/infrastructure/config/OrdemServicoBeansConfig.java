@@ -28,8 +28,6 @@ public class OrdemServicoBeansConfig {
     private final CriarProprietarioGateway criarProprietarioGateway;
     private final CriarVeiculoGateway criarVeiculoGateway;
     private final AdicionarServicoGateway adicionarGateway;
-    private final AprovarOrdemServicoGateway aprovarGateway;
-    private final AprovarOrdemServicoPresenter aprovarPresenter;
     private final BuscarOrdemServicoGateway buscarGateway;
     private final BuscarOrdemServicoPresenter buscarPresenter;
     private final BuscarOrdensPorStatusOrdenadoGateway buscarOrdensPorStatusGateway;
@@ -38,7 +36,6 @@ public class OrdemServicoBeansConfig {
     private final BuscarTempoMedioExecucaoPresenter buscarTempoMedioPresenter;
     private final IniciarDiagnosticoGateway iniciarDiagnosticoGateway;
     private final FinalizarDiagnosticoGateway finalizarDiagnosticoGateway;
-    private final ReprovarOrdemServicoGateway reprovarGateway;
     private final IniciarServicoGateway iniciarServicoGateway;
     private final FinalizarServicoGateway finalizarServicoGateway;
     private final RetirarVeiculoGateway retirarVeiculoGateway;
@@ -58,8 +55,6 @@ public class OrdemServicoBeansConfig {
                 criarProprietarioGateway,
                 criarVeiculoGateway,
                 adicionarGateway,
-                aprovarGateway,
-                aprovarPresenter,
                 buscarGateway,
                 buscarPresenter,
                 buscarOrdensPorStatusGateway,
@@ -68,7 +63,6 @@ public class OrdemServicoBeansConfig {
                 buscarTempoMedioPresenter,
                 iniciarDiagnosticoGateway,
                 finalizarDiagnosticoGateway,
-                reprovarGateway,
                 iniciarServicoGateway,
                 finalizarServicoGateway,
                 retirarVeiculoGateway,
