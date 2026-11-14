@@ -56,6 +56,7 @@ class HistoricoEstadoOsCicloCompletoIT {
             StatusOrdemServico.APROVADA.name(),
             StatusOrdemServico.EM_EXECUCAO.name(),
             StatusOrdemServico.FINALIZADA.name(),
+            StatusOrdemServico.PAGA.name(),
             StatusOrdemServico.ENTREGUE.name()
     );
 
@@ -205,6 +206,11 @@ class HistoricoEstadoOsCicloCompletoIT {
         flushClear();
 
         cleanController.finalizarServico(new FinalizarServicoUseCase.Input(osId, execucaoId, funcionarioUserId));
+        flushClear();
+
+        var osPaga = ordemServicoGateway.getOrdemServicoComServicosEPecas(osId);
+        osPaga.pagar();
+        ordemServicoGateway.salvarOrdemServico(osPaga);
         flushClear();
 
         cleanController.retirarVeiculo(osId, funcionarioUserId);

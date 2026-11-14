@@ -1,7 +1,7 @@
 package br.com.lata.velha.ordem_servico.application.event_handlers;
 
 import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.RegistrarFalhaDeducaoEstoqueUseCase;
-import br.com.lata.velha.ordem_servico.domain.events.DeducaoEstoqueFalhouEvent;
+import br.com.lata.velha.shared.domain.events.DeducaoEstoqueFalhouEvent;
 import br.com.lata.velha.shared.application.gateways.EventHandler;
 
 public class DeducaoEstoqueFalhouEventHandler implements EventHandler<DeducaoEstoqueFalhouEvent> {

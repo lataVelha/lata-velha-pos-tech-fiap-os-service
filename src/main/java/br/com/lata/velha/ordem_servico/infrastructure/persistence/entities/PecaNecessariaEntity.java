@@ -21,7 +21,7 @@ public class PecaNecessariaEntity {
     private Long id;
 
     @Column(name = "PECA_ID", nullable = false)
-    private Long pecaId;
+    private String pecaId;
 
     @Column(name = "EXECUCAO_SERVICO_ID", nullable = false)
     private Long execucaoServicoId;

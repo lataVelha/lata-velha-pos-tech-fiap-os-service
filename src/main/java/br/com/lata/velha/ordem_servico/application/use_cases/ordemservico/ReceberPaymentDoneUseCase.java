@@ -1,7 +1,7 @@
 package br.com.lata.velha.ordem_servico.application.use_cases.ordemservico;
 
 import br.com.lata.velha.ordem_servico.application.services.ordemservico.NotificarOrdemServicoService;
-import br.com.lata.velha.ordem_servico.domain.events.PaymentDoneEvent;
+import br.com.lata.velha.shared.domain.events.PaymentDoneEvent;
 import br.com.lata.velha.shared.application.logging.Logger;
 
 public class ReceberPaymentDoneUseCase {

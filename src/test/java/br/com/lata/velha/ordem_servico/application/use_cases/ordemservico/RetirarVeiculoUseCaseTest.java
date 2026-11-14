@@ -1,8 +1,10 @@
 package br.com.lata.velha.ordem_servico.application.use_cases.ordemservico;
 
 import br.com.lata.velha.ordem_servico.application.services.ordemservico.NotificarOrdemServicoService;
+import br.com.lata.velha.ordem_servico.domain.entities.ExecucaoServico;
 import br.com.lata.velha.ordem_servico.domain.entities.Funcionario;
 import br.com.lata.velha.ordem_servico.domain.entities.OrdemServico;
+import br.com.lata.velha.ordem_servico.domain.enums.StatusExecucaoServico;
 import br.com.lata.velha.ordem_servico.domain.enums.StatusOrdemServico;
 import br.com.lata.velha.shared.application.logging.Logger;
 import br.com.lata.velha.shared.domain.value_objects.UserId;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -57,10 +60,23 @@ class RetirarVeiculoUseCaseTest {
         );
     }
 
+    private OrdemServico buildOsComServico(StatusOrdemServico status) {
+        var execucao = ExecucaoServico.create(1L, 1L, new BigDecimal("150.00"));
+        execucao.setStatus(StatusExecucaoServico.FINALIZADO);
+        return new OrdemServico(
+                OS_ID, PROPRIETARIO_ID, VEICULO_ID, "Barulho ao frear",
+                status,
+                LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(),
+                null, null,
+                ATENDENTE_ID, MECANICO_ID,
+                new ArrayList<>(java.util.List.of(execucao))
+        );
+    }
+
     @Test
-    @DisplayName("deve retirar veículo com sucesso quando OS está FINALIZADA")
+    @DisplayName("deve retirar veículo com sucesso quando OS está PAGA")
     void deveRetirarVeiculoQuandoOsFinalizada() {
-        var os = buildOs(StatusOrdemServico.FINALIZADA);
+        var os = buildOs(StatusOrdemServico.PAGA);
         when(gateway.getOrdemServicoComServicosEPecas(OS_ID)).thenReturn(os);
         when(gateway.getFuncionarioPorUserId(userId)).thenReturn(atendente);
         when(gateway.salvarOrdemServico(any())).thenReturn(os);
@@ -86,7 +102,7 @@ class RetirarVeiculoUseCaseTest {
     @Test
     @DisplayName("deve salvar OS após retirar veículo")
     void deveSalvarOsAposRetirarVeiculo() {
-        var os = buildOs(StatusOrdemServico.FINALIZADA);
+        var os = buildOs(StatusOrdemServico.PAGA);
         when(gateway.getOrdemServicoComServicosEPecas(OS_ID)).thenReturn(os);
         when(gateway.getFuncionarioPorUserId(userId)).thenReturn(atendente);
         when(gateway.salvarOrdemServico(any())).thenReturn(os);
@@ -99,7 +115,7 @@ class RetirarVeiculoUseCaseTest {
     @Test
     @DisplayName("deve notificar após retirar veículo")
     void deveNotificarAposRetirarVeiculo() {
-        var os = buildOs(StatusOrdemServico.FINALIZADA);
+        var os = buildOs(StatusOrdemServico.PAGA);
         when(gateway.getOrdemServicoComServicosEPecas(OS_ID)).thenReturn(os);
         when(gateway.getFuncionarioPorUserId(userId)).thenReturn(atendente);
         when(gateway.salvarOrdemServico(any())).thenReturn(os);
@@ -110,7 +126,7 @@ class RetirarVeiculoUseCaseTest {
     }
 
     @Test
-    @DisplayName("deve lançar exceção quando OS não está FINALIZADA nem REPROVADA")
+    @DisplayName("deve lançar exceção quando OS não está PAGA nem REPROVADA")
     void deveLancarExcecaoQuandoOsNaoEstaEmStatusValido() {
         var os = buildOs(StatusOrdemServico.EM_EXECUCAO);
         when(gateway.getOrdemServicoComServicosEPecas(OS_ID)).thenReturn(os);
@@ -121,6 +137,35 @@ class RetirarVeiculoUseCaseTest {
 
         verify(gateway, never()).salvarOrdemServico(any());
         verify(notificarService, never()).execute(any());
+    }
+
+    @Test
+    @DisplayName("deve lançar exceção quando OS FINALIZADA com serviços não foi paga")
+    void deveLancarExcecaoQuandoOsFinalizadaNaoPaga() {
+        var os = buildOsComServico(StatusOrdemServico.FINALIZADA);
+        when(gateway.getOrdemServicoComServicosEPecas(OS_ID)).thenReturn(os);
+        when(gateway.getFuncionarioPorUserId(userId)).thenReturn(atendente);
+
+        assertThatThrownBy(() -> useCase.execute(OS_ID, userId))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("antes do pagamento");
+
+        assertThat(os.getStatus()).isEqualTo(StatusOrdemServico.FINALIZADA);
+        verify(gateway, never()).salvarOrdemServico(any());
+        verify(notificarService, never()).execute(any());
+    }
+
+    @Test
+    @DisplayName("deve retirar veículo de OS FINALIZADA sem serviços, pois nada é devido")
+    void deveRetirarVeiculoQuandoOsFinalizadaSemServicos() {
+        var os = buildOs(StatusOrdemServico.FINALIZADA);
+        when(gateway.getOrdemServicoComServicosEPecas(OS_ID)).thenReturn(os);
+        when(gateway.getFuncionarioPorUserId(userId)).thenReturn(atendente);
+        when(gateway.salvarOrdemServico(any())).thenReturn(os);
+
+        useCase.execute(OS_ID, userId);
+
+        assertThat(os.getStatus()).isEqualTo(StatusOrdemServico.ENTREGUE);
     }
 
     @Test
@@ -166,7 +211,7 @@ class RetirarVeiculoUseCaseTest {
     @Test
     @DisplayName("deve propagar exceção quando atendente não encontrado")
     void devePropagateExcecaoQuandoAtendenteNaoEncontrado() {
-        var os = buildOs(StatusOrdemServico.FINALIZADA);
+        var os = buildOs(StatusOrdemServico.PAGA);
         when(gateway.getOrdemServicoComServicosEPecas(OS_ID)).thenReturn(os);
         when(gateway.getFuncionarioPorUserId(userId))
                 .thenThrow(new RuntimeException("Atendente não encontrado"));

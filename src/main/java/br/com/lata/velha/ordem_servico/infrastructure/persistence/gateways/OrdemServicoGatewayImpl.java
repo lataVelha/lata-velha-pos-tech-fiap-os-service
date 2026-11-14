@@ -18,7 +18,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class OrdemServicoGatewayImpl implements
         CriarOrdemServicoGateway,
-        AprovarOrdemServicoGateway,
         BuscarOrdemServicoGateway,
         BuscarOrdensPorStatusOrdenadoGateway,
         BuscarTempoMedioExecucaoGateway,
@@ -27,7 +26,6 @@ public class OrdemServicoGatewayImpl implements
         FinalizarDiagnosticoGateway,
         IniciarServicoGateway,
         FinalizarServicoGateway,
-        ReprovarOrdemServicoGateway,
         RetirarVeiculoGateway,
         NotificarOrdemServicoGateway,
         ReceberAprovacaoOrcamentoClienteGateway,
