@@ -16,7 +16,6 @@ resource "kubectl_manifest" "configmap" {
     messaging_topic_arn = var.messaging_topic_arn
     messaging_queue_url = var.messaging_queue_url
     service_version     = var.service_version
-    db_schema           = var.db_schema
   })
   depends_on = [kubectl_manifest.namespace]
 }

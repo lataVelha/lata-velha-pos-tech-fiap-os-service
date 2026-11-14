@@ -22,7 +22,11 @@ public record ServicoRequest(
 
 ) {
     public AdicionarServicoUseCase.Input.ServicoAdicionar toUseCaseInput() {
-        var pecas = this.pecas.stream().map(PecaNecessariaRequest::toUseCaseInput).toList();
+        // `pecas` é opcional: sem o null-check, criar/alterar serviço sem peças
+        // estourava NullPointerException (500) em vez de simplesmente não ter peças.
+        var pecas = this.pecas != null
+                ? this.pecas.stream().map(PecaNecessariaRequest::toUseCaseInput).toList()
+                : List.<AdicionarServicoUseCase.Input.PecaNecessaria>of();
         return new AdicionarServicoUseCase.Input.ServicoAdicionar(servicoId, pecas, valorMaoDeObra);
     }
 }

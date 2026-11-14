@@ -36,9 +36,9 @@
 - [Objetivos e componentes](#fase-2--tech-challenge)
 - [Desenho da arquitetura AWS](./documentation/arquitetura-aws.svg)
 - [Fluxo de deploy (CI/CD)](./documentation/pipeline-cicd.svg)
-- [Deploy da aplicação](./terraform/README.md) — este repo só aplica os recursos da aplicação no cluster
+- [Deploy da aplicação](./terraform/README.md) — este repo aplica os recursos da aplicação no cluster e provisiona o RDS próprio
 - Infraestrutura base (VPC/EKS/ECR/ALB): repo [`infra`](https://github.com/lataVelha/lata-velha-pos-tech-fiap-infra)
-- Banco de dados (RDS): repo [`infra-db`](https://github.com/lataVelha/lata-velha-pos-tech-fiap-infra-db)
+- Banco de dados (RDS): provisionado **neste repo** (`terraform/rds.tf`) — instância própria do os-service
 
 ---
 
@@ -86,9 +86,9 @@ integração com o ALB e as rotas do API Gateway compartilhado ficam no repo `in
 
 - [`infra`](https://github.com/lataVelha/lata-velha-pos-tech-fiap-infra) — VPC, EKS, ECR, ALB
   interno, "casco" do API Gateway, Cluster Autoscaler
-- [`infra-db`](https://github.com/lataVelha/lata-velha-pos-tech-fiap-infra-db) — RDS PostgreSQL
 - [`lambda`](https://github.com/lataVelha/lata-velha-pos-tech-fiap-lambda) — login por CPF e a
   lambda authorizer usada nas rotas protegidas
+- RDS PostgreSQL próprio do os-service (`terraform/rds.tf`), sem compartilhar instância com o app
 
 O ALB não é acessível diretamente (subnets privadas, sem IP público) — todo tráfego externo
 passa pelo **API Gateway** (repo `infra`).
@@ -385,11 +385,10 @@ Quando terminar, voltar em http://localhost:9000 e clicar no projeto **Lata-Velh
 
 ## Infraestrutura (Terraform + EKS)
 
-VPC, EKS, RDS, ECR, ALB interno, API Gateway e autoscaling provisionados na AWS com Terraform,
-divididos entre quatro repos: [`infra`](https://github.com/lataVelha/lata-velha-pos-tech-fiap-infra)
-(base + API Gateway), [`infra-db`](https://github.com/lataVelha/lata-velha-pos-tech-fiap-infra-db)
-(banco), [`lambda`](https://github.com/lataVelha/lata-velha-pos-tech-fiap-lambda) (login por CPF +
-authorizer) e este repo (deploy da aplicação).
+VPC, EKS, ECR, ALB interno, API Gateway e autoscaling provisionados na AWS com Terraform,
+divididos entre: [`infra`](https://github.com/lataVelha/lata-velha-pos-tech-fiap-infra)
+(base + API Gateway), [`lambda`](https://github.com/lataVelha/lata-velha-pos-tech-fiap-lambda)
+(login por CPF + authorizer) e este repo (RDS próprio + deploy da aplicação).
 
 > Documentação do deploy da aplicação: [`terraform/README.md`](terraform/README.md)
 

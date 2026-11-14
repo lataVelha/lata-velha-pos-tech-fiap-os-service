@@ -5,7 +5,7 @@ variable "region" {
 }
 
 variable "state_bucket" {
-  description = "Bucket S3 onde este state e gravado e onde o infra-db publica o dele"
+  description = "Bucket S3 onde este state e gravado e onde o state do infra messaging e lido"
   type        = string
 }
 
@@ -16,8 +16,8 @@ variable "messaging_state_key" {
 }
 
 # Conexao com o EKS (provisionado pelo repo infra) — lidas via AWS CLI no
-# pipeline/apply.sh e passadas como TF_VAR_, ja que provider config nao usa
-# data sources para a propria inicializacao.
+# pipeline/apply.sh e passadas como TF_VAR_. O rds.tf usa cluster_name em um
+# data source aws_eks_cluster para descobrir VPC/subnets privadas do RDS.
 variable "cluster_endpoint" {
   description = "Endpoint do EKS cluster"
   type        = string
@@ -40,10 +40,29 @@ variable "node_port" {
   default     = 30082
 }
 
-variable "db_schema" {
-  description = "Schema PostgreSQL dedicado do os-service. O `app` baseline usa o schema public do mesmo banco do infra-db; manter schemas separados evita colisao de Flyway/migrations."
+variable "project_name" {
+  description = "Prefixo dos recursos do os-service (RDS, etc.)"
+  type        = string
+  default     = "lata-velha"
+}
+
+variable "db_name" {
+  description = "Nome do banco do os-service no RDS proprio"
   type        = string
   default     = "lata_velha_os"
+}
+
+variable "db_username" {
+  description = "Usuario master do RDS do os-service"
+  type        = string
+  default     = "lata_velha_os_user"
+  sensitive   = true
+}
+
+variable "rds_instance_class" {
+  description = "Classe da instancia RDS do os-service"
+  type        = string
+  default     = "db.t3.micro"
 }
 
 variable "docker_image" {
