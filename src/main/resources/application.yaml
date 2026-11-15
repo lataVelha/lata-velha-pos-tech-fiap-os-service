@@ -155,8 +155,8 @@ otel:
         dd-api-key: ${DD_API_KEY:}
   instrumentation:
     common-endpoint:
-      capture-request-headers: true
-      capture-response-headers: true
+      capture-request-headers: false
+      capture-response-headers: false
     logback-appender:
       enabled: true
       experimental:
@@ -164,7 +164,7 @@ otel:
     spring-webmvc:
       enabled: true
       experimental:
-        capture-request-parameters: true
+        capture-request-parameters: false
     spring-webflux:
       enabled: true
     spring-data:

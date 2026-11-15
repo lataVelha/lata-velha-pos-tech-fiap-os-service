@@ -12,6 +12,7 @@ import br.com.lata.velha.ordem_servico.application.use_cases.ordemservico.*;
 import br.com.lata.velha.ordem_servico.domain.enums.StatusOrdemServico;
 import br.com.lata.velha.shared.domain.pagination.PaginatedResult;
 import br.com.lata.velha.shared.domain.value_objects.UserId;
+import br.com.lata.velha.shared.infrastructure.observability.SpanAttributes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,9 +48,12 @@ public class OrdemServicoController {
     @ApiResponse(responseCode = "404", description = "Veículo, proprietário ou atendente não encontrado")
     public ResponseEntity<OrdemServicoResponse> create(@Valid @RequestBody CriarOrdemServicoRequest request,
                                                        @AuthenticationPrincipal Jwt jwt) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(cleanController.criar(request.toCriarOsUseCaseInput(UserId.fromString(jwt.getSubject()))));
+        var response = cleanController.criar(request.toCriarOsUseCaseInput(UserId.fromString(jwt.getSubject())));
+        SpanAttributes.set("ordem_servico.id", response.id());
+        SpanAttributes.set("ordem_servico.status", response.status());
+        SpanAttributes.set("proprietario.id", request.proprietarioId());
+        SpanAttributes.set("veiculo.id", request.veiculoId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/completa")
@@ -63,9 +67,10 @@ public class OrdemServicoController {
     @ApiResponse(responseCode = "404", description = "Atendente, serviço ou peça não encontrado")
     public ResponseEntity<OrdemServicoResponse> createCompleta(@Valid @RequestBody CriarOrdemServicoCompletaRequest request,
                                                                 @AuthenticationPrincipal Jwt jwt) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(cleanController.criarCompleta(request.toUseCaseInput(UserId.fromString(jwt.getSubject()))));
+        var response = cleanController.criarCompleta(request.toUseCaseInput(UserId.fromString(jwt.getSubject())));
+        SpanAttributes.set("ordem_servico.id", response.id());
+        SpanAttributes.set("ordem_servico.status", response.status());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
@@ -81,6 +86,10 @@ public class OrdemServicoController {
             @Parameter(description = "Filtrar por ID do mecânico") @RequestParam(required = false) Long mecanicoId,
             @Parameter(description = "Número da página (começa em 0)") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Itens por página") @RequestParam(defaultValue = "10") int size) {
+        SpanAttributes.set("ordem_servico.id", id);
+        SpanAttributes.set("ordem_servico.status", status);
+        SpanAttributes.set("proprietario.id", proprietarioId);
+        SpanAttributes.set("mecanico.id", mecanicoId);
         return ResponseEntity.ok(cleanController.buscar(id, status, proprietarioId, mecanicoId, page, size));
     }
 
@@ -113,6 +122,8 @@ public class OrdemServicoController {
     public ResponseEntity<Void> startDiagnostic(
             @Parameter(description = "ID da ordem de serviço", example = "20") @PathVariable Long idOs,
             @AuthenticationPrincipal Jwt jwt) {
+        SpanAttributes.set("ordem_servico.id", idOs);
+
         cleanController.iniciarDiagnostico(new IniciarDiagnosticoUseCase.Input(idOs, UserId.fromString(jwt.getSubject())));
         return ResponseEntity.ok().build();
     }
@@ -131,6 +142,8 @@ public class OrdemServicoController {
             @Parameter(description = "ID da ordem de serviço", example = "20") @PathVariable Long idOs,
             @Valid @RequestBody AddServicoRequest request
     ) {
+        SpanAttributes.set("ordem_servico.id", idOs);
+
         cleanController.adicionarServico(request.toUseCaseInput(idOs));
         return ResponseEntity.ok().build();
     }
@@ -147,6 +160,8 @@ public class OrdemServicoController {
     public ResponseEntity<Void> finalDiagnostic(
             @Parameter(description = "ID da ordem de serviço", example = "20") @PathVariable Long idOs,
             @AuthenticationPrincipal Jwt jwt) {
+        SpanAttributes.set("ordem_servico.id", idOs);
+
         cleanController.finalizarDiagnostico(new FinalizarDiagnosticoUseCase.Input(idOs, UserId.fromString(jwt.getSubject())));
         return ResponseEntity.ok().build();
     }
@@ -164,6 +179,9 @@ public class OrdemServicoController {
             @Parameter(description = "ID da ordem de serviço", example = "20") @PathVariable Long idOs,
             @Parameter(description = "ID do serviço a iniciar", example = "5") @PathVariable Long servicoId,
             @AuthenticationPrincipal Jwt jwt) {
+        SpanAttributes.set("ordem_servico.id", idOs);
+        SpanAttributes.set("servico.id", servicoId);
+
         cleanController.iniciarServico(new IniciarServicoUseCase.Input(idOs, servicoId, UserId.fromString(jwt.getSubject())));
         return ResponseEntity.ok().build();
     }
@@ -181,6 +199,9 @@ public class OrdemServicoController {
             @Parameter(description = "ID da ordem de serviço", example = "20") @PathVariable Long idOs,
             @Parameter(description = "ID do serviço a finalizar", example = "5") @PathVariable Long servicoId,
             @AuthenticationPrincipal Jwt jwt) {
+        SpanAttributes.set("ordem_servico.id", idOs);
+        SpanAttributes.set("servico.id", servicoId);
+
         cleanController.finalizarServico(new FinalizarServicoUseCase.Input(idOs, servicoId, UserId.fromString(jwt.getSubject())));
         return ResponseEntity.ok().build();
     }
@@ -197,6 +218,8 @@ public class OrdemServicoController {
     public ResponseEntity<Void> removeVehicle(
             @Parameter(description = "ID da ordem de serviço", example = "20") @PathVariable Long idOs,
             @AuthenticationPrincipal Jwt jwt) {
+        SpanAttributes.set("ordem_servico.id", idOs);
+
         cleanController.retirarVeiculo(idOs, UserId.fromString(jwt.getSubject()));
         return ResponseEntity.ok().build();
     }
@@ -226,6 +249,7 @@ public class OrdemServicoController {
     public ResponseEntity<ReceberAprovacaoOrcamentoClientePresenter.ViewModel> receberAprovacaoOrcamento(
             @PathVariable Long id,
             @Valid @RequestBody ReceberAprovacaoOrcamentoRequest request) {
+        SpanAttributes.set("ordem_servico.id", id);
         return ResponseEntity.ok(cleanController.receberAprovacaoOrcamentoCliente(request.toInput(id)));
     }
 }
