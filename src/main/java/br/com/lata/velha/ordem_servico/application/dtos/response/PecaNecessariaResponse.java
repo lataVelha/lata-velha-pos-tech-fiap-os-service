@@ -10,8 +10,8 @@ public record PecaNecessariaResponse(
         @Schema(example = "10")
         Long id,
 
-        @Schema(example = "1")
-        Long pecaId,
+        @Schema(example = "6915f3a1c2b4d5e6f7a8b9c0")
+        String pecaId,
 
         @Schema(example = "4")
         Integer quantidade,

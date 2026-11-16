@@ -13,14 +13,14 @@ import java.util.Objects;
  */
 public final class PecaNecessaria {
     private final Long id;
-    private final Long pecaId;
+    private final String pecaId;
     private final Long execucaoServicoId;
 
     private Integer quantidade;
 
     private LocalDateTime atualizado;
 
-    public PecaNecessaria(Long id, Long pecaId, Long execucaoServicoId, Integer quantidade, LocalDateTime atualizado) {
+    public PecaNecessaria(Long id, String pecaId, Long execucaoServicoId, Integer quantidade, LocalDateTime atualizado) {
         validatePecaId(pecaId);
         validateExecucaoServicoId(execucaoServicoId);
 
@@ -31,14 +31,14 @@ public final class PecaNecessaria {
         this.atualizado = atualizado;
     }
 
-    public static PecaNecessaria create(Long pecaId, Long execucaoServicoId, Integer quantidade) {
+    public static PecaNecessaria create(String pecaId, Long execucaoServicoId, Integer quantidade) {
         return new PecaNecessaria(null, pecaId, execucaoServicoId, quantidade, LocalDateTime.now());
     }
 
     /* ================= GETTERS ================= */
 
     public Long getId() { return id; }
-    public Long getPecaId() { return pecaId; }
+    public String getPecaId() { return pecaId; }
     public Long getExecucaoServicoId() { return execucaoServicoId; }
     public Integer getQuantidade() { return quantidade; }
     public LocalDateTime getAtualizado() { return atualizado; }
@@ -65,8 +65,8 @@ public final class PecaNecessaria {
             throw new IllegalArgumentException("Serviço obrigatório");
     }
 
-    private void validatePecaId(Long pecaId) {
-        if (pecaId == null)
+    private void validatePecaId(String pecaId) {
+        if (pecaId == null || pecaId.isBlank())
             throw new IllegalArgumentException("Peça obrigatória");
     }
 

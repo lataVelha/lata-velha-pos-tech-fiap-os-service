@@ -186,7 +186,7 @@ class IniciarServicoUseCaseIT {
         // necessária registrada aqui não bloqueia mais o início do serviço.
         PecaNecessariaEntity pecaNecessaria = new PecaNecessariaEntity();
         pecaNecessaria.setExecucaoServicoId(execucaoId);
-        pecaNecessaria.setPecaId(1L);
+        pecaNecessaria.setPecaId("1");
         pecaNecessaria.setQuantidade(2);
         pecaNecessaria.setAtualizado(LocalDateTime.now());
         em.persist(pecaNecessaria);

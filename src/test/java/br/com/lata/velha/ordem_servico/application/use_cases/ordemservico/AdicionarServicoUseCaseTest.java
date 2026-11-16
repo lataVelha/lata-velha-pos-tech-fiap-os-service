@@ -34,7 +34,7 @@ class AdicionarServicoUseCaseTest {
 
     private static final Long OS_ID = 1L;
     private static final Long SERVICO_ID = 10L;
-    private static final Long PECA_ID = 20L;
+    private static final String PECA_ID = "20";
     private static final Long EXEC_ID = 100L;
 
     private OrdemServico os;

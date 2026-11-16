@@ -11,8 +11,8 @@ import jakarta.validation.constraints.NotNull;
  */
 public record PecaNecessariaRequest(
         @NotNull(message = "Peça Id é obrigatório!")
-        @Schema(example = "1", description = "id da peça")
-        Long pecaId,
+        @Schema(example = "6915f3a1c2b4d5e6f7a8b9c0", description = "id da peça")
+        String pecaId,
 
         @NotNull(message = "Quantidade é obrigatório!")
         @Schema(example = "1", description = "quantidade de peças necessárias")

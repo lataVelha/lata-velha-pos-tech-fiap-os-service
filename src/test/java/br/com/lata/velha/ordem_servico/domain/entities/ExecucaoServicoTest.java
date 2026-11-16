@@ -40,7 +40,7 @@ class ExecucaoServicoTest {
         return build(StatusExecucaoServico.EM_EXECUCAO, new HashSet<>());
     }
 
-    private static PecaNecessaria peca(Long pecaId, int quantidade) {
+    private static PecaNecessaria peca(String pecaId, int quantidade) {
         return new PecaNecessaria(null, pecaId, EXEC_ID, quantidade, LocalDateTime.now());
     }
 
@@ -224,7 +224,7 @@ class ExecucaoServicoTest {
         @DisplayName("deve adicionar peça sem alterar status")
         void deveAdicionarPecaSemMudarStatus() {
             ExecucaoServico exec = pendente();
-            var peca = peca(5L, 2);
+            var peca = peca("5", 2);
 
             exec.adicionarPecaNecessaria(peca);
 
@@ -236,7 +236,7 @@ class ExecucaoServicoTest {
         @DisplayName("deve lançar exceção quando serviço já está finalizado")
         void deveLancarExcecaoQuandoFinalizado() {
             ExecucaoServico exec = build(StatusExecucaoServico.FINALIZADO, new HashSet<>());
-            var peca = peca(5L, 1);
+            var peca = peca("5", 1);
 
             assertThatThrownBy(() -> exec.adicionarPecaNecessaria(peca))
                     .isInstanceOf(IllegalStateException.class)
@@ -257,8 +257,8 @@ class ExecucaoServicoTest {
         @DisplayName("deve lançar exceção quando peça já foi adicionada")
         void deveLancarExcecaoQuandoPecaDuplicada() {
             ExecucaoServico exec = pendente();
-            exec.adicionarPecaNecessaria(peca(5L, 2));
-            var pecaDuplicada = peca(5L, 1);
+            exec.adicionarPecaNecessaria(peca("5", 2));
+            var pecaDuplicada = peca("5", 1);
 
             assertThatThrownBy(() -> exec.adicionarPecaNecessaria(pecaDuplicada))
                     .isInstanceOf(IllegalStateException.class)

@@ -125,8 +125,8 @@ public final class OrdemServico {
     }
 
     public void entregar(Long atendenteId) {
-        if (!this.isFinalizada() && !this.isReprovada() && !this.isPaga())
-            throw new IllegalStateException("Esta Ordem de Serviço não foi Finalizada: " + this.getId());
+        if (!this.podeSerEntregue())
+            throw new IllegalStateException("Esta Ordem de Serviço não pode ser entregue antes do pagamento: " + this.getId());
         this.atendenteInicioId =atendenteId;
         mudarStatus(StatusOrdemServico.ENTREGUE);
         this.entregueEm = LocalDateTime.now();
@@ -206,6 +206,12 @@ public final class OrdemServico {
 
     public boolean isPaga() {
         return this.status.equals(StatusOrdemServico.PAGA);
+    }
+
+    public boolean podeSerEntregue() {
+        return this.isPaga()
+                || this.isReprovada()
+                || (this.isFinalizada() && this.execucaoServicos.isEmpty());
     }
 
     public boolean todosServicosConcluidos() {
