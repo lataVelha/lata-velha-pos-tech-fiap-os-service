@@ -50,7 +50,8 @@ public class FinalizarDiagnosticoUseCase {
         var itens = ordemServico.getExecucaoServicos().stream()
                 .map(this::toItemDiagnostico)
                 .toList();
-        return new DiagnosticoFinalizadoEvent(ordemServico.getId(), itens);
+        var emailProprietario = gateway.getProprietarioPorId(ordemServico.getProprietarioId()).getEmail();
+        return new DiagnosticoFinalizadoEvent(ordemServico.getId(), itens, emailProprietario);
     }
 
     private DiagnosticoFinalizadoEvent.ItemDiagnostico toItemDiagnostico(ExecucaoServico execucao) {

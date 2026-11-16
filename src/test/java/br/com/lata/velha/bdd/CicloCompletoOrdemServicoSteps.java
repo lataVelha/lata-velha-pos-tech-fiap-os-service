@@ -287,7 +287,17 @@ public class CicloCompletoOrdemServicoSteps {
     private static final AtomicInteger SEQUENCIA = new AtomicInteger();
 
     private String documentoUnico(int sequencia) {
-        return String.format("%011d", 35949343000L + sequencia);
+        // Gera um CPF válido a partir de 9 dígitos base (100000000 + sequencia)
+        int[] d = new int[11];
+        int base = 100000000 + sequencia;
+        for (int i = 8; i >= 0; i--) { d[i] = base % 10; base /= 10; }
+        int s = 0; for (int i = 0; i < 9; i++) s += d[i] * (10 - i);
+        int r = s % 11; d[9] = (r < 2) ? 0 : 11 - r;
+        s = 0; for (int i = 0; i < 10; i++) s += d[i] * (11 - i);
+        r = s % 11; d[10] = (r < 2) ? 0 : 11 - r;
+        var sb = new StringBuilder();
+        for (int x : d) sb.append(x);
+        return sb.toString();
     }
 
     private String placaUnica(int sequencia) {
