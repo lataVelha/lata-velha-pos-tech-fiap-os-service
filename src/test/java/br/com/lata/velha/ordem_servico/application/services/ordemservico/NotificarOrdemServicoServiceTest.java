@@ -232,7 +232,7 @@ class NotificarOrdemServicoServiceTest {
 
 
     @Test
-    @DisplayName("deve construir timeline com 6 passos para status normal (não reprovada)")
+    @DisplayName("deve construir timeline com 8 passos para status normal (não reprovada)")
     void deveConstruirTimelineParaStatusNormal() {
         @SuppressWarnings("unchecked")
         ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
@@ -242,7 +242,7 @@ class NotificarOrdemServicoServiceTest {
         verify(templateProvider).render(anyString(), captor.capture());
         @SuppressWarnings("unchecked")
         var timeline = (List<Map<String, Object>>) captor.getValue().get("timeline");
-        assertThat(timeline).hasSize(7);
+        assertThat(timeline).hasSize(8);
     }
 
     @Test
