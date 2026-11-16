@@ -30,6 +30,8 @@ public class NotificarOrdemServicoService {
     private static final String FINALIZADA = "Finalizada";
     private static final String ENTREGUE = "Entregue";
     private static final String AGUARDANDO_APROVACAO = "Aguardando Aprovação";
+    private static final String AGUARDANDO_PAGAMENTO = "Aguardando Pagamento";
+    private static final String PAGAMENTO_CONFIRMADO = "Pagamento Confirmado";
     private static final String MSG_VEICULO_RECEBIDO = "Veículo recebido pela oficina";
     private static final String MSG_MECANICO_AVALIOU = "Mecânico avaliando o veículo";
     private static final String MSG_VEICULO_RETIRADO = "Veículo retirado pelo proprietário";
@@ -270,8 +272,9 @@ public class NotificarOrdemServicoService {
                     new TimelineStep(3, AGUARDANDO_APROVACAO, "Aprovação dos serviços identificados", StatusOrdemServico.AGUARDANDO_APROVACAO),
                     new TimelineStep(4, "Aprovada", "Serviços aprovados, aguardando início da execução", StatusOrdemServico.APROVADA),
                     new TimelineStep(5, "Em Execução", "Mecânico executando os serviços", StatusOrdemServico.EM_EXECUCAO),
-                    new TimelineStep(6, FINALIZADA, "Serviços concluídos", StatusOrdemServico.FINALIZADA),
-                    new TimelineStep(7, ENTREGUE, MSG_VEICULO_RETIRADO, StatusOrdemServico.ENTREGUE)
+                    new TimelineStep(6, AGUARDANDO_PAGAMENTO, "Serviços concluídos, realize o pagamento para liberar o veículo", StatusOrdemServico.FINALIZADA),
+                    new TimelineStep(7, PAGAMENTO_CONFIRMADO, "Pagamento recebido com sucesso", StatusOrdemServico.PAGA),
+                    new TimelineStep(8, ENTREGUE, MSG_VEICULO_RETIRADO, StatusOrdemServico.ENTREGUE)
             );
         }
 
@@ -282,10 +285,11 @@ public class NotificarOrdemServicoService {
                 .orElse(1);
 
         boolean isStepConcluido = statusAtual == StatusOrdemServico.RECEBIDA
-                || statusAtual == StatusOrdemServico.FINALIZADA
+                || (statusAtual == StatusOrdemServico.FINALIZADA && semServicos)
                 || statusAtual == StatusOrdemServico.ENTREGUE
                 || statusAtual == StatusOrdemServico.REPROVADA
-                || statusAtual == StatusOrdemServico.APROVADA;
+                || statusAtual == StatusOrdemServico.APROVADA
+                || statusAtual == StatusOrdemServico.PAGA;
 
         List<Map<String, Object>> timeline = new ArrayList<>();
         for (TimelineStep step : steps) {
